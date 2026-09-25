@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hupe1980/spec-kit-attacktree/schemas/attack-tree.schema.json",
+  "title": "AttackTree attack tree",
+  "description": "Canonical, machine-readable attack tree of one Spec Kit feature: threat actors, attack goals with impact, an AND/OR node tree with attack vectors at the leaves, security controls, CR-### control requirements, verification history, and risk decisions. Reference integrity and tree structure are enforced by the engine (check A2), not by this schema.",
+  "type": "object",
+  "required": ["attacktree", "project"],
+  "properties": {
+    "attacktree": {
+      "type": "object",
+      "required": ["version"],
+      "properties": {
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+        "generated": { "type": "string" },
+        "profiles": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+        "extends": { "type": ["string", "null"] },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "sha256"],
+            "properties": {
+              "path": { "type": "string" },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            }
+          }
+        },
+        "exclusions": {
+          "type": "array",
+          "description": "Spec entities or OTM threats deliberately left out of the tree, with the reason",
+          "items": {
+            "type": "object",
+            "required": ["entity", "reason"],
+            "properties": {
+              "entity": { "type": "string", "minLength": 1 },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "owner": { "type": "string" }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "$ref": "#/$defs/actorId" },
+          "name": { "type": "string", "minLength": 1 },
+          "description": { "type": "string" },
+          "archetype": { "type": "string" },
+          "capabilities": {
+            "type": "object",
+            "properties": {
+              "skill": { "enum": ["novice", "intermediate", "advanced", "expert"] },
+              "resources": { "enum": ["minimal", "moderate", "substantial", "extensive"] },
+              "access": { "enum": ["external", "user", "insider", "privileged"] },
+              "risk_appetite": { "enum": ["low", "medium", "high"] }
+            }
+          },
+          "occurrence": { "type": "integer", "minimum": 1, "maximum": 100, "description": "How likely this actor targets the system (percent); scales every path this actor can run. Default 100." },
+          "motivation": { "type": "string" },
+          "source": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "$ref": "#/$defs/assetId" },
+          "name": { "type": "string", "minLength": 1 },
+          "type": { "enum": ["business", "data", "technical"] },
+          "classification": { "enum": ["public", "internal", "confidential", "restricted", "pii", "secret"] },
+          "description": { "type": "string" },
+          "source": { "type": "string" }
+        }
+      }
+    },
+    "goals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "impact"],
+        "properties": {
+          "id": { "$ref": "#/$defs/goalId" },
+          "name": { "type": "string", "minLength": 1 },
+          "description": { "type": "string" },
+          "gate": { "$ref": "#/$defs/gate" },
+          "impact": {
+            "oneOf": [
+              { "$ref": "#/$defs/impactLevel" },
+              {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": { "$ref": "#/$defs/impactLevel" }
+              }
+            ]
+          },
+          "assets": { "type": "array", "items": { "$ref": "#/$defs/assetId" } },
+          "links": { "$ref": "#/$defs/links" },
+          "source": { "type": "string" },
+          "status": { "enum": ["open", "mitigated", "accepted", "transferred", "retired"] },
+          "retired_reason": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "parent"],
+        "properties": {
+          "id": { "$ref": "#/$defs/nodeId" },
+          "name": { "type": "string", "minLength": 1 },
+          "description": { "type": "string" },
+          "parent": { "type": "string", "pattern": "^(goal|node)\\.[a-z0-9.-]+$" },
+          "gate": { "$ref": "#/$defs/gate" },
+          "zone": { "type": "string" },
+          "attack": {
+            "type": "object",
+            "description": "Present on leaves only: the attack vector",
+            "properties": {
+              "actors": { "type": "array", "items": { "$ref": "#/$defs/actorId" } },
+              "complexity": { "enum": ["trivial", "low", "medium", "high", "extreme"] },
+              "cost": { "type": "integer", "minimum": 0 },
+              "likelihood": { "type": "integer", "minimum": 0, "maximum": 100 },
+              "likelihood_range": {
+                "type": "array", "minItems": 2, "maxItems": 2,
+                "items": { "type": "integer", "minimum": 0, "maximum": 100 }
+              },
+              "requires": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9-]+$" } },
+              "detectability": { "enum": ["low", "medium", "high"] },
+              "references": { "$ref": "#/$defs/references" }
+            }
+          },
+          "links": { "$ref": "#/$defs/links" },
+          "source": { "type": "string" },
+          "status": { "enum": ["open", "needs-clarification", "retired"] },
+          "retired_reason": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "nodes"],
+        "properties": {
+          "id": { "$ref": "#/$defs/controlId" },
+          "name": { "type": "string", "minLength": 1 },
+          "description": { "type": "string" },
+          "kind": { "enum": ["preventive", "detective", "compensating"] },
+          "nodes": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^(goal|node)\\.[a-z0-9.-]+$" } },
+          "effect": { "enum": ["low", "medium", "high", "eliminates"] },
+          "effects": { "type": "object", "description": "Per-node effect levels overriding `effect` for that attached node", "additionalProperties": { "enum": ["low", "medium", "high", "eliminates"] } },
+          "bypass_rate": { "type": ["integer", "null"], "minimum": 0, "maximum": 100, "description": "Measured bypass rate in percent; overrides effect when present" },
+          "probabilistic": { "type": "boolean", "description": "Guardrails, classifiers, human review: sampled in Monte Carlo runs" },
+          "cost": { "enum": ["low", "medium", "high"] },
+          "status": { "enum": ["proposed", "planned", "implemented", "verified", "rejected"] },
+          "evidence": { "enum": ["assumed", "design-reviewed", "lab-validated", "end-to-end-validated", "regression-tested"] },
+          "touchpoints": { "type": "array", "items": { "type": "string" } },
+          "requirements": { "type": "array", "items": { "$ref": "#/$defs/crId" } },
+          "validation": { "type": "array", "items": { "type": "string" } },
+          "references": { "$ref": "#/$defs/references" },
+          "source": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "controls"],
+        "properties": {
+          "id": { "$ref": "#/$defs/crId" },
+          "statement": { "type": "string", "minLength": 1 },
+          "priority": { "enum": ["P1", "P2", "P3"] },
+          "controls": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/controlId" } },
+          "acceptance": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["given", "when", "then"],
+              "properties": {
+                "given": { "type": "string" },
+                "when": { "type": "string" },
+                "then": { "type": "string" }
+              }
+            }
+          },
+          "tasks": { "type": "array", "items": { "type": "string", "pattern": "^T[0-9]{3,}$" } },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "verification": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "requirement", "method", "evidence", "result"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^verification\\.[a-z0-9.-]+$" },
+          "requirement": { "$ref": "#/$defs/crId" },
+          "method": { "enum": ["test", "review", "scan", "simulation", "manual", "evidence"] },
+          "evidence": { "type": "string", "minLength": 1 },
+          "result": { "enum": ["pass", "fail", "partial", "inconclusive"] },
+          "verdict": { "enum": ["verified", "implemented-unverified", "partial", "missing"] },
+          "bypass_rate": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "justification": { "type": "string" },
+          "verified_at": { "type": "string" },
+          "verified_by": { "type": "string" },
+          "commit": { "type": "string" }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "target", "status", "owner", "rationale", "expires"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^decision\\.[a-z0-9.-]+$" },
+          "target": { "type": "string", "pattern": "^(goal|node)\\.[a-z0-9.-]+$" },
+          "status": { "enum": ["accepted", "transferred"] },
+          "owner": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 },
+          "expires": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "decided_at": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "gate": { "enum": ["or", "and"] },
+    "impactLevel": { "enum": ["low", "medium", "high", "critical"] },
+    "actorId": { "type": "string", "pattern": "^actor\\.[a-z0-9.-]+$" },
+    "assetId": { "type": "string", "pattern": "^asset\\.[a-z0-9.-]+$" },
+    "goalId": { "type": "string", "pattern": "^goal\\.[a-z0-9.-]+$" },
+    "nodeId": { "type": "string", "pattern": "^node\\.[a-z0-9.-]+$" },
+    "controlId": { "type": "string", "pattern": "^control\\.[a-z0-9.-]+$" },
+    "crId": { "type": "string", "pattern": "^CR-[0-9]{3,}$" },
+    "links": {
+      "type": "object",
+      "properties": {
+        "threats": { "type": "array", "items": { "type": "string", "minLength": 1 }, "description": "Threat ids as they appear in the OTM file" },
+        "mitigations": { "type": "array", "items": { "type": "string", "minLength": 1 }, "description": "Mitigation ids as they appear in the OTM file" }
+      }
+    },
+    "references": {
+      "type": "object",
+      "additionalProperties": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+# A minimal Open Threat Model 0.2 document used to test `seed` and the A13 link check.
+otmVersion: "0.2.0"
+project:
+  id: 007-agent-assistant
+  name: Agent Assistant
+assets:
+  - id: asset.document
+    name: Document
+    risk: { confidentiality: 60, integrity: 90, availability: 40 }
+    attributes: { classification: internal, source: "spec.md#Key-Entities" }
+  - id: asset.ticket-api-tool
+    name: Ticket API tool
+    attributes: { type: tool, classification: internal, source: "spec.md#FR-004" }
+threats:
+  - id: threat.rag-poisoning
+    name: A content author plants instructions in a document that steer the agent
+    categories: [Tampering]
+    risk: { likelihood: 75, impact: 90 }
+    attributes: { assets: [asset.document], source: "spec.md#FR-003", status: open }
+  - id: threat.inference-exhaustion
+    name: Unbounded questions exhaust inference capacity
+    categories: [Denial of Service]
+    risk: { likelihood: 40, impact: 40 }
+    attributes: { source: "spec.md#FR-001", status: open }
+  - id: threat.retired-one
+    name: No longer relevant
+    categories: [Spoofing]
+    risk: { likelihood: 10, impact: 10 }
+    attributes: { status: retired }
+mitigations:
+  - id: mitigation.context-isolation
+    name: Isolate retrieved content from instructions
+    attributes: { threats: [threat.rag-poisoning] }

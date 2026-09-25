@@ -1,0 +1,79 @@
+name: Release
+
+# Tag `vX.Y.Z` → validate that extension.yml carries the same version, run the tests,
+# build attacktree-vX.Y.Z.zip (installable with `specify extension add attacktree --from <asset url>`),
+# and publish a GitHub Release with generated notes.
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Check that the tag matches extension.yml
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          manifest="$(uv run --with pyyaml python -c 'import yaml;print(yaml.safe_load(open("extension.yml"))["extension"]["version"])')"
+          echo "tag=$tag manifest=$manifest"
+          test "$tag" = "$manifest" || { echo "::error::extension.yml version ($manifest) does not match tag ($tag)"; exit 1; }
+
+      - name: Run tests
+        run: uv run --with pytest --with pyyaml --with jsonschema pytest -q -p no:cacheprovider
+
+      - name: Build extension archive
+        run: |
+          set -euo pipefail
+          out="attacktree-${GITHUB_REF_NAME}"
+          mkdir -p "dist/$out"
+          # Ship exactly what `specify extension add` would keep: everything except .extensionignore matches.
+          rsync -a --exclude-from=.extensionignore --exclude=.git --exclude=dist ./ "dist/$out/"
+          (cd dist && zip -qr "$out.zip" "$out")
+          ls -la dist
+          unzip -l "dist/$out.zip" | head -40
+          echo "SHA256=$(sha256sum "dist/$out.zip" | cut -d' ' -f1)" >> "$GITHUB_ENV"
+
+      - name: Smoke-install the archive with the Spec Kit CLI
+        run: |
+          set -euo pipefail
+          uv venv /tmp/speckit
+          uv pip install --python /tmp/speckit/bin/python git+https://github.com/github/spec-kit.git
+          export PATH="/tmp/speckit/bin:$PATH"
+          mkdir -p /tmp/scratch && cd /tmp/scratch
+          specify init . --integration claude --non-interactive --ignore-agent-tools
+          (cd "$GITHUB_WORKSPACE/dist" && python3 -m http.server 8765 --bind 127.0.0.1 >/dev/null 2>&1 &)
+          sleep 1
+          # A single 'y' answers the untrusted-URL prompt. `yes |` would keep writing after the
+          # CLI exits, take SIGPIPE, and fail the step under `pipefail` even on a successful install.
+          printf 'y\n' | specify extension add attacktree --from "http://127.0.0.1:8765/attacktree-${GITHUB_REF_NAME}.zip"
+          specify extension list
+          test -d .specify/extensions/attacktree/commands
+          test -f .specify/extensions/attacktree/scripts/python/attacktree.py
+          test ! -e .specify/extensions/attacktree/tests      # .extensionignore honoured
+          test ! -e .specify/extensions/attacktree/examples
+          test ! -e .specify/extensions/attacktree/action.yml
+          .specify/extensions/attacktree/scripts/bash/attacktree.sh validate \
+            "$GITHUB_WORKSPACE/examples/agent-assistant/specs/001-agent-assistant/attack-tree.yaml"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/attacktree-${{ github.ref_name }}.zip
+          generate_release_notes: true
+          body: |
+            Install with:
+
+            ```bash
+            specify extension add attacktree --from https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/attacktree-${{ github.ref_name }}.zip
+            # or the source archive listed in catalog.json
+            specify extension add attacktree --from https://github.com/${{ github.repository }}/archive/refs/tags/${{ github.ref_name }}.zip
+            ```
+
+            Release asset SHA-256: `${{ env.SHA256 }}`

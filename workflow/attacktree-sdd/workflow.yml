@@ -1,0 +1,91 @@
+schema_version: "1.0"
+workflow:
+  id: "attacktree-sdd"
+  name: "Attack-Tree-Driven SDD Cycle"
+  version: "0.1.0"
+  author: "hupe1980"
+  description: "specify → attack tree → plan → attack tree (plan pass) → simulate → tasks → check → implement → control converge → converge, with review gates"
+
+requires:
+  speckit_version: ">=1.0.0"
+  integrations:
+    any: ["claude", "copilot", "gemini", "cursor", "opencode"]
+
+inputs:
+  spec:
+    type: string
+    required: true
+    prompt: "Describe what you want to build"
+  integration:
+    type: string
+    default: "auto"
+    prompt: "Integration to use ('auto' uses the project's initialized integration)"
+
+steps:
+  - id: specify
+    command: speckit.specify
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: model
+    command: speckit.attacktree.model
+    integration: "{{ inputs.integration }}"
+
+  - id: review-attack-tree
+    type: gate
+    message: "Review attack-tree.md (actors, goals, paths) and the Control Requirements block in spec.md before planning."
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: plan
+    command: speckit.plan
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: model-plan-pass
+    command: speckit.attacktree.model
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "--from-plan"
+
+  - id: simulate
+    command: speckit.attacktree.simulate
+    integration: "{{ inputs.integration }}"
+
+  - id: review-roadmap
+    type: gate
+    message: "Review the simulation: residual risk, single points of failure, and the control roadmap. Set the controls you will build to planned before generating tasks."
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: tasks
+    command: speckit.tasks
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: check
+    command: speckit.attacktree.check
+    integration: "{{ inputs.integration }}"
+
+  - id: review-check
+    type: gate
+    message: "Control gap check complete. Resolve CRITICAL findings before implementing. Proceed?"
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: implement
+    command: speckit.implement
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: control-converge
+    command: speckit.attacktree.converge
+    integration: "{{ inputs.integration }}"
+
+  - id: converge
+    command: speckit.converge
+    integration: "{{ inputs.integration }}"

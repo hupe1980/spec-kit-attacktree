@@ -1,0 +1,133 @@
+schema_version: "1.0"
+
+extension:
+  id: attacktree
+  name: "AttackTree — Attack Tree Modeling & Control Simulation"
+  version: "0.1.0"
+  description: "Attack trees with attacker profiles, AND/OR path simulation, control roadmaps, and control-to-test traceability"
+  category: process
+  effect: read-write
+  author: hupe1980
+  repository: https://github.com/hupe1980/spec-kit-attacktree
+  homepage: https://github.com/hupe1980/spec-kit-attacktree
+  license: MIT
+
+requires:
+  speckit_version: ">=1.0.0"
+
+provides:
+  commands:
+    - name: speckit.attacktree.model
+      file: commands/speckit.attacktree.model.md
+      description: "Create or incrementally update the feature attack tree (attack-tree.yaml) from spec.md, plan.md, and an optional threat model, and publish CR-### control requirements into spec.md"
+    - name: speckit.attacktree.check
+      file: commands/speckit.attacktree.check.md
+      description: "Deterministic and semantic gap check across goals, attack paths, controls, control requirements, tasks, and verification"
+    - name: speckit.attacktree.simulate
+      file: commands/speckit.attacktree.simulate.md
+      description: "Simulate attack paths per attacker profile: residual risk, choke points, Achilles heels, control what-if roadmap, Monte Carlo"
+    - name: speckit.attacktree.converge
+      file: commands/speckit.attacktree.converge.md
+      description: "Verify control requirements against code and tests with evidence, record verification, recompute residual risk, and append remediation tasks"
+
+  templates:
+    - name: attacktree-attack-tree
+      file: templates/attack-tree.md
+      description: "Human-readable rendering of attack-tree.yaml"
+    - name: attacktree-attack-tree-yaml
+      file: templates/attack-tree.yaml
+      description: "Empty attack tree skeleton"
+    - name: attacktree-control-requirements
+      file: templates/control-requirements.md
+      description: "Control Requirements block inserted into spec.md between attacktree markers"
+
+  scripts:
+    - name: attacktree-python
+      file: scripts/python/attacktree.py
+      description: "AttackTree engine: paths, init, seed, validate, merge, render, check, simulate, converge-scan, converge-apply"
+      runtimes: [python]
+    - name: attacktree-bash
+      file: scripts/bash/attacktree.sh
+      description: "Bash wrapper that locates a Python runtime and delegates to the engine"
+      runtimes: [bash]
+    - name: attacktree-powershell
+      file: scripts/powershell/attacktree.ps1
+      description: "PowerShell wrapper that locates a Python runtime and delegates to the engine"
+      runtimes: [powershell]
+
+  config:
+    - name: attacktree-config.yml
+      template: config-template.yml
+      description: "AttackTree configuration (profiles, enforcement, risk scenario, simulation, verification)"
+      required: false
+
+hooks:
+  after_specify:
+    command: speckit.attacktree.model
+    optional: true
+    prompt: "Build or update the attack tree for this feature?"
+    description: "Attack tree from spec.md: attacker profiles, goals with impact, AND/OR attack paths, controls, CR-### requirements"
+  after_clarify:
+    command: speckit.attacktree.model
+    optional: true
+    prompt: "The spec changed. Refresh the attack tree?"
+    description: "Incremental attack-tree update after clarifications"
+  after_plan:
+    command: speckit.attacktree.model
+    optional: true
+    prompt: "Refine the attack tree with the plan's components and control touchpoints?"
+    description: "Second pass over plan.md: concrete attack vectors and control touchpoints"
+  after_tasks:
+    command: speckit.attacktree.check
+    optional: true
+    prompt: "Check that every control requirement has a task?"
+    description: "Gap check: goals → paths → controls → CR-### → tasks"
+  before_implement:
+    command: speckit.attacktree.simulate
+    optional: true
+    prompt: "Simulate residual risk with the current and the planned controls before implementing?"
+    description: "Runs the current and the planned scenario; blocks on goals whose residual risk stays at block_on when enforcement is strict"
+  after_implement:
+    command: speckit.attacktree.converge
+    optional: true
+    prompt: "Verify the security controls with evidence?"
+    description: "Evidence-based verification of every CR-###, residual risk with verified controls only"
+  before_converge:
+    command: speckit.attacktree.converge
+    optional: true
+    prompt: "Add unmet control requirements as convergence tasks?"
+    description: "Appends control remediation tasks so core converge picks them up"
+
+tags:
+  - "security"
+  - "attack-trees"
+  - "threat-modeling"
+  - "risk-simulation"
+  - "traceability"
+
+config:
+  defaults:
+    profiles: [default]
+    enforcement: warn
+    risk:
+      block_on: [critical]
+      scenario: current
+      max_paths: 200
+    simulation:
+      iterations: 2000
+      seed: 42
+      likelihood_spread: 15
+    risk_acceptance:
+      require_owner: true
+      max_duration_days: 180
+    model:
+      baseline: .specify/memory/attack-tree.yaml
+      otm: ""
+      write_requirements_to_spec: true
+      render_markdown: true
+      diagram: mermaid
+    verification:
+      test_command: ""
+      scanners: []
+      evidence_markers: ["CR-"]
+      test_dirs: [tests, test, spec, __tests__]

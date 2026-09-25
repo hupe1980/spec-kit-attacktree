@@ -1,0 +1,85 @@
+# AttackTree attack tree — canonical, machine-readable.
+# Generated and maintained by /speckit-attacktree-model; validated by schemas/attack-tree.schema.json.
+# Human-owned fields survive regeneration whatever an incoming file says: goals[].status, nodes[].status,
+# controls[].{status,evidence,bypass_rate}, actors[].occurrence, requirements[].tasks, verification[], decisions[], *.notes.
+# The model command omits them for entities that already exist.
+
+attacktree:
+  version: "0.1"
+  generated: "[ISO-8601 timestamp]"
+  profiles: [default]         # default | agentic (see profiles/)
+  extends: null               # optional: ../../.specify/memory/attack-tree.yaml
+  sources: []                 # [{path: spec.md, sha256: ...}] filled by the engine (spec.md, plan.md, the configured OTM file)
+  exclusions: []              # [{entity: "Open Event", reason: "..."}] spec entities or threats deliberately left out
+
+project:
+  id: "[###-feature-name]"
+  name: "[Feature name]"
+
+actors: []                    # who attacks, with capabilities the simulation checks leaves against
+# - id: actor.outsider
+#   name: Outside attacker group
+#   archetype: outside-attacker-group           # optional, from the profile's actor_archetypes
+#   capabilities: { skill: advanced, resources: substantial, access: external, risk_appetite: high }
+#   motivation: Sell customer data
+#   source: "spec.md#Assumptions"
+
+assets: []                    # what the goals hit (optional, OTM-compatible types)
+# - { id: asset.customer-records, name: Customer records, type: data, classification: pii, source: "spec.md#Key-Entities" }
+
+goals: []                     # roots of the trees: what the attacker wants, and what it costs us
+# - id: goal.read-any-customer-record
+#   name: Attacker reads customer records they are not entitled to
+#   gate: or                                    # or (any child path) | and (every child path)
+#   impact: { business: high, customer: critical, compliance: high }   # per profile impact class; highest wins
+#   assets: [asset.customer-records]
+#   links: { threats: [threat.idor-records] }   # optional cross-references into the configured OTM file
+#   source: "spec.md#FR-003"
+#   status: open                                # open | mitigated | accepted | transferred | retired
+
+nodes: []                     # flat list; parent = goal or node; leaves carry `attack`
+# - id: node.obtain-session
+#   name: Obtain a valid user session
+#   parent: goal.read-any-customer-record
+#   gate: or
+# - id: node.phish-user
+#   name: Phish a user for their session
+#   parent: node.obtain-session
+#   attack:
+#     actors: [actor.outsider]
+#     complexity: low                           # trivial | low | medium | high | extreme (→ skill required)
+#     cost: 500                                 # optional, currency-agnostic units (→ resources required)
+#     likelihood: 60                            # 0–100 success probability per attempt before controls
+#     requires: [illegal]                       # tags → capability constraints from the profile
+#     references: { capec: [CAPEC-98] }
+#   zone: input                                 # optional, agentic profile
+#   source: "spec.md#Assumptions"
+#   status: open                                # open | needs-clarification | retired
+
+controls: []                  # security controls attached to nodes or goals; nearer the root = more generic
+# - id: control.central-authorization
+#   name: Deny-by-default object authorization on every record read
+#   kind: preventive                            # preventive | detective | compensating
+#   nodes: [node.guess-record-id]
+#   effect: high                                # low | medium | high | eliminates (→ likelihood reduction)
+#   bypass_rate: null                           # measured bypass in percent; overrides effect when set
+#   probabilistic: false                        # true for guardrails, classifiers, human review
+#   cost: medium                                # low | medium | high
+#   status: proposed                            # proposed | planned | implemented | verified | rejected
+#   evidence: assumed                           # assumed | design-reviewed | lab-validated | end-to-end-validated | regression-tested
+#   touchpoints: [src/api/records.py]
+#   requirements: [CR-001]
+#   validation: ["Request another tenant's record id with a valid session; expect 404 and an audit event"]
+#   references: { asvs: [V4.1.3] }
+
+requirements: []              # CR-### control requirements published into spec.md
+# - id: CR-001
+#   statement: System MUST ... (testable, imperative)
+#   priority: P1
+#   controls: [control.central-authorization]
+#   acceptance:
+#     - { given: ..., when: ..., then: ... }
+#   tasks: []                                   # optional T### ids; tasks tagged [CR-###] in tasks.md are matched at run time
+
+verification: []              # appended by /speckit-attacktree-converge; never rewritten
+decisions: []                 # [{id: decision.x, target: goal.x, status: accepted, owner: "@who", rationale: "...", expires: YYYY-MM-DD}]

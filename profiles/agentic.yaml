@@ -1,0 +1,66 @@
+# AttackTree profile: agentic and LLM systems
+# Adds the five attack-surface zones, agentic actor archetypes, attack vector proposals mapped to the
+# OWASP Top 10 for Agentic Applications 2026 (ASI01–ASI10), OWASP Top 10 for LLM Applications 2026,
+# MITRE ATLAS and MAESTRO layers, and control proposals that distinguish deterministic controls
+# from probabilistic ones (guardrails, classifiers, human-in-the-loop), which Monte Carlo runs sample.
+#
+# Foundation: Schneider, "Threat modeling agentic AI: a scenario-driven approach" (2026) and
+# "Verifying agentic AI controls with attack tree micro simulations" (2026).
+
+profile:
+  id: agentic
+  name: Agentic and LLM attack paths
+  version: "0.1"
+  foundation: "OWASP Top 10 for Agentic Applications 2026; OWASP Top 10 for LLM Applications 2026; MITRE ATLAS; MAESTRO; Schneider five zones"
+  reference_keys: [owasp-asi-2026, owasp-llm-2026, mitre-atlas, maestro-layer, capec]
+
+# Attack-surface zones a node may carry in `zone:` (Schneider's navigation lens).
+zones:
+  - { id: input, name: Input surfaces, description: "Every channel through which data enters the agent's context: prompts, retrieval, email, API responses, tool descriptions" }
+  - { id: reasoning, name: Planning and reasoning, description: "Where the agent interprets goals and selects tools; target of goal hijacking" }
+  - { id: tools, name: Tool execution, description: "External capabilities the agent invokes; privilege must be scoped per task" }
+  - { id: memory, name: Memory and state, description: "Context, working memory, and long-term persistence; poisoning persists across sessions" }
+  - { id: inter-agent, name: Inter-agent communication, description: "Message passing between agents; one poisoned agent can contaminate a network" }
+
+actor_archetypes:
+  - { id: content-author, name: Author of content the agent will read, skill: novice, resources: minimal, access: user, risk_appetite: medium }
+  - { id: malicious-tool-publisher, name: Publisher of a malicious tool or MCP server, skill: advanced, resources: moderate, access: external, risk_appetite: high }
+  - { id: autonomous-exploit-agent, name: Model-assisted adversary probing at machine speed, skill: expert, resources: substantial, access: external, risk_appetite: high }
+  - { id: peer-agent, name: Compromised peer agent, skill: intermediate, resources: minimal, access: user, risk_appetite: high }
+
+vector_proposals:
+  - { id: direct-prompt-injection, name: User prompt overrides the agent's instructions, complexity: low, zone: input, requires: [authenticated], references: { owasp-llm-2026: [LLM01], mitre-atlas: [AML.T0051.000] } }
+  - { id: indirect-prompt-injection, name: Instructions hidden in retrieved or fetched content steer the agent, complexity: low, zone: input, requires: [], references: { owasp-llm-2026: [LLM01, LLM08], owasp-asi-2026: [ASI01], mitre-atlas: [AML.T0051.001] } }
+  - { id: tool-description-poisoning, name: Tool description carries hidden exfiltration instructions, complexity: medium, zone: input, requires: [], references: { owasp-asi-2026: [ASI04], maestro-layer: [L7-agent-ecosystem] } }
+  - { id: rug-pull-tool, name: Legitimate tool changes behaviour after installation, complexity: medium, zone: tools, requires: [long-duration], references: { owasp-asi-2026: [ASI04], maestro-layer: [L7-agent-ecosystem] } }
+  - { id: goal-hijack, name: Agent planning shifts to the attacker's goal, complexity: medium, zone: reasoning, requires: [], references: { owasp-asi-2026: [ASI01], maestro-layer: [L3-agent-frameworks] } }
+  - { id: tool-misuse, name: Tool invoked with harmful or out-of-scope parameters, complexity: medium, zone: tools, requires: [], references: { owasp-asi-2026: [ASI02], maestro-layer: [L3-agent-frameworks] } }
+  - { id: delegated-credential-abuse, name: Agent's delegated credentials used beyond the task, complexity: medium, zone: tools, requires: [], references: { owasp-asi-2026: [ASI03], maestro-layer: [L6-security-compliance] } }
+  - { id: code-execution-escape, name: Generated code or command runs outside its sandbox, complexity: high, zone: tools, requires: [], references: { owasp-asi-2026: [ASI05], maestro-layer: [L4-deployment-infrastructure] } }
+  - { id: memory-poisoning, name: Persistent memory poisoned to influence future sessions, complexity: medium, zone: memory, requires: [authenticated], references: { owasp-asi-2026: [ASI06], maestro-layer: [L2-data-operations] } }
+  - { id: inter-agent-spoofing, name: Message between agents spoofed or tampered, complexity: high, zone: inter-agent, requires: [], references: { owasp-asi-2026: [ASI07], maestro-layer: [L7-agent-ecosystem] } }
+  - { id: cascading-failure, name: One compromised agent propagates to others, complexity: medium, zone: inter-agent, requires: [], references: { owasp-asi-2026: [ASI08], maestro-layer: [L5-evaluation-observability] } }
+  - { id: approval-fatigue, name: Human approves a harmful action shown without context, complexity: low, zone: tools, requires: [], references: { owasp-asi-2026: [ASI09], maestro-layer: [L5-evaluation-observability] } }
+  - { id: egress-exfiltration, name: Agent sends data to an attacker-controlled endpoint, complexity: low, zone: tools, requires: [], references: { owasp-asi-2026: [ASI02], mitre-atlas: [AML.T0025] } }
+  - { id: sensitive-context-leak, name: Model reveals hidden context, secrets, or other users' data, complexity: low, zone: reasoning, requires: [], references: { owasp-llm-2026: [LLM02, LLM08], mitre-atlas: [AML.T0057] } }
+  - { id: unbounded-consumption, name: Recursion, fan-out, or token floods exhaust budget, complexity: low, zone: reasoning, requires: [], references: { owasp-llm-2026: [LLM06], mitre-atlas: [AML.T0034] } }
+
+control_proposals:
+  # deterministic
+  - { id: tool-pinning, name: Hash and pin tool definitions; verify at invocation, kind: preventive, effect: high, references: { owasp-asi-2026: [ASI04] } }
+  - { id: tool-allowlist, name: Explicit allowlist of tools and MCP servers, kind: preventive, effect: high, references: { owasp-asi-2026: [ASI04] } }
+  - { id: egress-allowlist, name: Outbound network allowlist for the agent runtime, kind: preventive, effect: high, references: { owasp-asi-2026: [ASI02] } }
+  - { id: credential-isolation, name: Per-tool, per-task credentials the agent never sees, kind: preventive, effect: high, references: { owasp-asi-2026: [ASI03] } }
+  - { id: tool-scope-restriction, name: Tool privileges scoped per task, not per tool, kind: preventive, effect: medium, references: { owasp-asi-2026: [ASI02] } }
+  - { id: sandboxed-execution, name: Generated code runs only in a sandbox, kind: preventive, effect: high, references: { owasp-asi-2026: [ASI05] } }
+  - { id: provenance-tagging, name: Every context chunk tagged with source and trust level, kind: preventive, effect: medium, references: { owasp-llm-2026: [LLM01] } }
+  - { id: memory-write-validation, name: Validate and moderate memory writes; memory entries expire, kind: preventive, effect: medium, references: { owasp-asi-2026: [ASI06] } }
+  - { id: authenticated-agent-channels, name: Authenticated, schema-validated inter-agent messages, kind: preventive, effect: high, references: { owasp-asi-2026: [ASI07] } }
+  - { id: recursion-caps, name: Caps on agent loops, fan-out, and token budgets, kind: preventive, effect: high, references: { owasp-llm-2026: [LLM06] } }
+  - { id: action-audit-log, name: Every agent action attributable in an append-only log, kind: detective, effect: low, references: { owasp-asi-2026: [ASI09] } }
+  # probabilistic: measured bypass rates belong in `bypass_rate`; Monte Carlo samples them
+  - { id: injection-classifier, name: Content scanning and injection classifier on ingress, kind: preventive, effect: medium, probabilistic: true, references: { owasp-llm-2026: [LLM01] } }
+  - { id: goal-lock-classifier, name: Goal-lock check that plan steps still serve the original goal, kind: detective, effect: medium, probabilistic: true, references: { owasp-asi-2026: [ASI01] } }
+  - { id: human-in-the-loop, name: Human approval with the full reasoning chain for high-impact actions, kind: preventive, effect: medium, probabilistic: true, references: { owasp-asi-2026: [ASI09] } }
+  - { id: output-guardrail, name: Output guardrail blocking secrets and policy violations, kind: preventive, effect: medium, probabilistic: true, references: { owasp-llm-2026: [LLM02] } }
+  - { id: behaviour-monitoring, name: Behavioural monitoring across the agent network with kill switch, kind: detective, effect: low, probabilistic: true, references: { owasp-asi-2026: [ASI10] } }

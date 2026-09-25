@@ -1,0 +1,67 @@
+attacktree:
+  version: "0.1"
+  profiles: [default]
+project:
+  id: broken
+  name: Broken tree
+
+actors:
+  - id: actor.unrated
+    name: Actor without capabilities
+
+goals:
+  - id: goal.empty
+    name: Goal without any attack path
+    impact: high
+  - id: goal.open
+    name: Goal with an uncontrolled path
+    impact: { data: critical }
+  - id: goal.cycle
+    name: Goal whose nodes form a cycle
+    impact: low
+
+nodes:
+  - id: node.single-child
+    name: OR node with a single child
+    parent: goal.open
+    gate: or
+  - id: node.unrated-leaf
+    name: Leaf without an attack block
+    parent: node.single-child
+  - id: node.dangling-actor
+    name: Leaf naming an unknown actor
+    parent: goal.open
+    attack:
+      actors: [actor.missing]
+      complexity: low
+      likelihood: 60
+  - id: node.question
+    name: "[NEEDS CLARIFICATION: is the admin API reachable from the internet?]"
+    parent: goal.open
+    status: needs-clarification
+  - id: node.cycle-a
+    name: Cycle a
+    parent: node.cycle-b
+  - id: node.cycle-b
+    name: Cycle b
+    parent: node.cycle-a
+
+controls:
+  - id: control.orphan
+    name: Control attached to a missing node
+    nodes: [node.missing]
+    status: proposed
+  - id: control.claims-verified
+    name: Control claiming verification without evidence
+    nodes: [node.dangling-actor]
+    status: verified
+
+requirements: []
+verification: []
+decisions:
+  - id: decision.expired
+    target: goal.open
+    status: accepted
+    owner: "@someone"
+    rationale: old
+    expires: 2020-01-01

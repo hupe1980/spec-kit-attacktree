@@ -1,0 +1,131 @@
+# AttackTree profile: default
+# Supplies the scales the engine computes with (capabilities, complexity, control effect, impact,
+# risk matrix), actor archetypes, and proposal libraries for attack vectors (CAPEC/CWE) and
+# controls (OWASP ASVS). Proposals are ideas for the model command, never auto-inserted.
+#
+# Foundations: Schneier, "Attack Trees" (Dr. Dobb's Journal, 1999); Schneider, Attack Tree
+# (attacktree.online): actors with capabilities, goals with impact, AND/OR paths, controls with
+# effect and cost, what-if roadmaps, Monte Carlo simulation; MITRE CAPEC; OWASP ASVS 4.0.3 (chapter numbering).
+
+profile:
+  id: default
+  name: Attack tree foundations
+  version: "0.1"
+  foundation: "Schneier 1999 attack trees; Schneider attacktree.online; MITRE CAPEC; OWASP ASVS 4.0.3"
+  reference_keys: [capec, cwe, attack, asvs-4.0]
+
+scales:
+  # Ordered low → high. An actor satisfies a requirement when its rank is at least the required rank.
+  skill: [novice, intermediate, advanced, expert]
+  resources: [minimal, moderate, substantial, extensive]
+  access: [external, user, insider, privileged]
+  risk_appetite: [low, medium, high]
+
+  # Complexity of an attack vector → skill required, and the default success likelihood (0–100)
+  # used when the leaf does not state one.
+  complexity:
+    trivial: { skill: novice, likelihood: 90 }
+    low: { skill: novice, likelihood: 75 }
+    medium: { skill: intermediate, likelihood: 50 }
+    high: { skill: advanced, likelihood: 30 }
+    extreme: { skill: expert, likelihood: 10 }
+
+  # Numeric leaf cost (currency-agnostic units) → resources an actor needs. Upper bounds, inclusive.
+  cost_tiers:
+    minimal: 1000
+    moderate: 25000
+    substantial: 250000
+    extensive: null
+
+  # `attack.requires` tags → capability an actor must have. Unknown tags are reported by check A4.
+  requires:
+    authenticated: { access: user }
+    insider-access: { access: insider }
+    privileged-access: { access: privileged }
+    special-equipment: { resources: moderate }
+    long-duration: { resources: moderate }
+    illegal: { risk_appetite: medium }
+    physical-presence: { risk_appetite: medium }
+    violence: { risk_appetite: high }
+
+  # Control effect level → fraction by which the likelihood of the attached node is reduced.
+  control_effect:
+    low: 0.25
+    medium: 0.5
+    high: 0.8
+    eliminates: 1.0
+
+  # Control implementation cost level → weight used for cost-efficiency ranking.
+  control_cost:
+    low: 1
+    medium: 3
+    high: 9
+
+  # Impact classes a goal may rate; the highest rated class is the goal's impact level.
+  impact_classes: [business, customer, data, compliance, safety]
+  impact_levels: [low, medium, high, critical]
+  impact_weight: { low: 1, medium: 2, high: 4, critical: 8 }
+
+  # Goal likelihood (0–100, best feasible path after controls) → likelihood level.
+  likelihood_levels: { low: 0, medium: 15, high: 40, very-high: 70 }
+
+  # likelihood level × impact level → risk level
+  risk_matrix:
+    very-high: { low: medium, medium: high, high: critical, critical: critical }
+    high: { low: low, medium: medium, high: high, critical: critical }
+    medium: { low: low, medium: medium, high: medium, critical: high }
+    low: { low: low, medium: low, high: medium, critical: high }
+
+# Threat actor archetypes (Schneider's scenario-driven set). Copy and adjust; ids are suggestions.
+actor_archetypes:
+  - { id: script-kiddie, name: Script kiddie, skill: novice, resources: minimal, access: external, risk_appetite: medium }
+  - { id: hacktivist, name: Hacktivist, skill: intermediate, resources: minimal, access: external, risk_appetite: high }
+  - { id: outside-attacker-group, name: Outside attacker group, skill: advanced, resources: substantial, access: external, risk_appetite: high }
+  - { id: social-engineer, name: Social engineer, skill: intermediate, resources: moderate, access: external, risk_appetite: medium }
+  - { id: inside-attacker-group, name: Inside attacker group, skill: advanced, resources: substantial, access: insider, risk_appetite: high }
+  - { id: compromised-employee, name: Compromised employee, skill: novice, resources: minimal, access: insider, risk_appetite: low }
+  - { id: evil-admin, name: Malicious administrator, skill: advanced, resources: moderate, access: privileged, risk_appetite: medium }
+  - { id: nation-state, name: State-sponsored group, skill: expert, resources: extensive, access: external, risk_appetite: high }
+
+# Attack vector proposals: ideas for leaves, with default complexity and references.
+vector_proposals:
+  - { id: credential-stuffing, name: Credential stuffing with leaked passwords, complexity: low, requires: [], references: { capec: [CAPEC-600], cwe: [CWE-307] } }
+  - { id: phishing, name: Phishing a user for credentials or a session, complexity: low, requires: [illegal], references: { capec: [CAPEC-98], attack: [T1566] } }
+  - { id: session-hijack, name: Steal or replay a session token, complexity: medium, requires: [], references: { capec: [CAPEC-593], cwe: [CWE-384] } }
+  - { id: sql-injection, name: Inject SQL through an input field or parameter, complexity: medium, requires: [], references: { capec: [CAPEC-66], cwe: [CWE-89] } }
+  - { id: command-injection, name: Inject OS commands through an input reaching a shell, complexity: medium, requires: [], references: { capec: [CAPEC-88], cwe: [CWE-78] } }
+  - { id: idor, name: Access another principal's object by guessing its identifier, complexity: low, requires: [authenticated], references: { capec: [CAPEC-1], cwe: [CWE-639] } }
+  - { id: privilege-escalation-config, name: Escalate through writable configuration or over-broad roles, complexity: medium, requires: [authenticated], references: { capec: [CAPEC-233], cwe: [CWE-269] } }
+  - { id: xss, name: Inject script into a page other users see, complexity: low, requires: [], references: { capec: [CAPEC-63], cwe: [CWE-79] } }
+  - { id: ssrf, name: Make the server fetch an attacker-chosen URL, complexity: medium, requires: [], references: { capec: [CAPEC-664], cwe: [CWE-918] } }
+  - { id: path-traversal, name: Read files outside the intended directory, complexity: low, requires: [], references: { capec: [CAPEC-126], cwe: [CWE-22] } }
+  - { id: dependency-compromise, name: Compromise a third-party dependency or build step, complexity: high, requires: [long-duration], references: { capec: [CAPEC-437], cwe: [CWE-1357] } }
+  - { id: insider-data-export, name: Export data through legitimate insider access, complexity: trivial, requires: [insider-access], references: { capec: [CAPEC-122], attack: [T1567] } }
+  - { id: admin-abuse, name: Abuse administrative privileges to read or alter data, complexity: trivial, requires: [privileged-access], references: { capec: [CAPEC-122] } }
+  - { id: brute-force, name: Brute-force a password, token, or key, complexity: low, requires: [], references: { capec: [CAPEC-49], cwe: [CWE-307] } }
+  - { id: mitm, name: Intercept or modify traffic on the network path, complexity: high, requires: [special-equipment], references: { capec: [CAPEC-94], cwe: [CWE-319] } }
+  - { id: dos-flood, name: Exhaust capacity with request or payload floods, complexity: low, requires: [], references: { capec: [CAPEC-125], cwe: [CWE-400] } }
+  - { id: log-tampering, name: Delete or alter audit records to hide activity, complexity: medium, requires: [privileged-access], references: { capec: [CAPEC-268], cwe: [CWE-778] } }
+  - { id: secret-in-repo, name: Harvest a secret committed to a repository or image, complexity: trivial, requires: [], references: { capec: [CAPEC-150], cwe: [CWE-798] } }
+  - { id: physical-access, name: Gain physical access to a device or facility, complexity: medium, requires: [physical-presence, illegal], references: { capec: [CAPEC-390] } }
+  - { id: bribery, name: Bribe or coerce a person with access, complexity: low, requires: [illegal], references: { capec: [CAPEC-416] } }
+
+# Control proposals: ideas for controls, with default kind and effect and ASVS 4.0.3 section references
+# (the key is edition-pinned because ASVS 5.0 renumbered every chapter).
+control_proposals:
+  - { id: mfa, name: Multi-factor authentication, kind: preventive, effect: high, references: { asvs-4.0: [V2.8] } }
+  - { id: rate-limiting, name: Per-principal rate limiting and lockout, kind: preventive, effect: medium, references: { asvs-4.0: [V2.2.1] } }
+  - { id: input-validation, name: Allowlist input validation at the boundary, kind: preventive, effect: medium, references: { asvs-4.0: [V5.1] } }
+  - { id: parameterized-queries, name: Parameterized queries, no string-built commands, kind: preventive, effect: eliminates, references: { asvs-4.0: [V5.3.4] } }
+  - { id: central-authorization, name: Central deny-by-default authorization on every object access, kind: preventive, effect: high, references: { asvs-4.0: [V4.1] } }
+  - { id: short-lived-tokens, name: Short-lived, audience-bound sessions and tokens, kind: preventive, effect: medium, references: { asvs-4.0: [V3.3] } }
+  - { id: output-encoding, name: Context-aware output encoding, kind: preventive, effect: high, references: { asvs-4.0: [V5.3.3] } }
+  - { id: egress-allowlist, name: Outbound network allowlist, kind: preventive, effect: high, references: { asvs-4.0: [V12.6] } }
+  - { id: secrets-manager, name: Secrets in a managed vault, scanned out of code, kind: preventive, effect: high, references: { asvs-4.0: [V6.4] } }
+  - { id: dependency-pinning, name: Pinned, signed, and scanned dependencies, kind: preventive, effect: medium, references: { asvs-4.0: [V14.2] } }
+  - { id: tamper-evident-logging, name: Append-only, tamper-evident audit log, kind: detective, effect: low, references: { asvs-4.0: [V7.1] } }
+  - { id: anomaly-detection, name: Behavioural anomaly detection and alerting, kind: detective, effect: low, references: { asvs-4.0: [V7.2] } }
+  - { id: least-privilege, name: Least-privilege roles and credentials, kind: preventive, effect: medium, references: { asvs-4.0: [V4.2] } }
+  - { id: tls-everywhere, name: TLS on every hop with certificate validation, kind: preventive, effect: eliminates, references: { asvs-4.0: [V9.1] } }
+  - { id: human-approval, name: Human approval before high-impact actions, kind: preventive, effect: medium, probabilistic: true, references: { asvs-4.0: [V4.3] } }
+  - { id: backups-immutable, name: Immutable backups with tested restore, kind: compensating, effect: low, references: { nist-csf: [PR.DS-11, RC.RP] } }

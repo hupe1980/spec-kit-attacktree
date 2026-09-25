@@ -1,0 +1,60 @@
+# AttackTree configuration
+# Copy to .specify/extensions/attacktree/attacktree-config.yml and adjust.
+# Local overrides: attacktree-config.local.yml (gitignored).
+# Environment overrides: SPECKIT_ATTACKTREE_ENFORCEMENT, SPECKIT_ATTACKTREE_PROFILES, SPECKIT_ATTACKTREE_SCENARIO.
+# Reference: docs/configuration.md
+
+# Profiles supply the capability scales, complexity levels, control effect levels, impact classes,
+# the risk matrix, and proposal libraries (attack vectors with CAPEC ids, controls with ASVS ids).
+# Available in v0.1: default, agentic. The first profile that declares `scales` wins.
+profiles:
+  - default
+  # - agentic   # add for LLM and agent features: zones, agentic vectors and controls
+
+# warn   → check/simulate report findings and continue
+# strict → CRITICAL findings and goals at block_on residual risk instruct the agent to stop before /speckit-implement
+enforcement: warn
+
+risk:
+  # Residual risk levels that block convergence (and, under strict enforcement, implementation)
+  block_on: [critical]
+  # Which control statuses count as active when computing residual risk:
+  #   none     → no control at all           (the baseline: what the tree looks like undefended)
+  #   current  → implemented + verified      (default; what exists today)
+  #   verified → verified only               (what converge uses: evidence, not claims)
+  #   planned  → current + planned           (what-if for the roadmap)
+  scenario: current
+  # Attack-path enumeration cap per goal; larger trees are truncated and flagged
+  max_paths: 200
+
+simulation:
+  # Monte Carlo iterations (0 disables); results are reproducible for a given seed
+  iterations: 2000
+  seed: 42
+  # ± points applied to every leaf likelihood (and ±15 % to probabilistic control effects) when sampling
+  likelihood_spread: 15
+
+risk_acceptance:
+  require_owner: true
+  max_duration_days: 180
+
+model:
+  # Project-level baseline inherited by every feature tree (shared actors, assets, controls, decisions)
+  baseline: .specify/memory/attack-tree.yaml
+  # Optional Open Threat Model (OTM) file, relative to the feature directory or the repository: `seed` reads it,
+  # goal links are checked against it (A13), and it is hashed for drift (A11). Empty disables OTM interop.
+  otm: ""
+  # Publish CR-### requirements into spec.md between <!-- attacktree:begin --> / <!-- attacktree:end -->
+  write_requirements_to_spec: true
+  render_markdown: true
+  diagram: mermaid          # mermaid | none
+
+verification:
+  # Optional evidence runner executed by converge (empty = locate evidence only)
+  test_command: ""
+  # Scanner or micro-simulation outputs that converge may cite as evidence (never as judgment)
+  scanners: []
+  # How tests reference requirements (substring searched in test files)
+  evidence_markers: ["CR-"]
+  # Directories searched for evidence
+  test_dirs: [tests, test, spec, __tests__]

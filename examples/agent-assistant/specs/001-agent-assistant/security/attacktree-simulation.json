@@ -1,0 +1,1506 @@
+{
+  "scenario": "current",
+  "applied": [],
+  "removed": [],
+  "active_controls": [],
+  "block_on": [
+    "critical"
+  ],
+  "blocking_goals": [
+    "goal.abuse-ticket-credential",
+    "goal.impersonate-employee",
+    "goal.poison-answers",
+    "goal.read-restricted-documents"
+  ],
+  "unknown_goals": [],
+  "decided_goals": [],
+  "goals": [
+    {
+      "id": "goal.abuse-ticket-credential",
+      "name": "Attacker uses the assistant's ticket API credential beyond creating a ticket",
+      "impact": "high",
+      "feasible": true,
+      "unknown": false,
+      "assumed": [],
+      "likelihood": 80.0,
+      "likelihood_level": "very-high",
+      "risk": "critical",
+      "accepted_paths": 0,
+      "residual_risk": "critical",
+      "paths": [
+        {
+          "leaves": [
+            "node.atc-read-config"
+          ],
+          "nodes": [
+            "goal.abuse-ticket-credential",
+            "node.atc-read-config"
+          ],
+          "likelihood": 80.0,
+          "raw_likelihood": 80.0,
+          "cost": 0,
+          "actors": [
+            "actor.operator"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.atc-call-beyond-scope",
+            "node.atc-inject-document"
+          ],
+          "nodes": [
+            "goal.abuse-ticket-credential",
+            "node.atc-call-beyond-scope",
+            "node.atc-hijack",
+            "node.atc-inject",
+            "node.atc-inject-document"
+          ],
+          "likelihood": 32.5,
+          "raw_likelihood": 32.5,
+          "cost": 100,
+          "actors": [
+            "actor.outsider"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.atc-call-beyond-scope",
+            "node.atc-inject-question"
+          ],
+          "nodes": [
+            "goal.abuse-ticket-credential",
+            "node.atc-call-beyond-scope",
+            "node.atc-hijack",
+            "node.atc-inject",
+            "node.atc-inject-question"
+          ],
+          "likelihood": 30.0,
+          "raw_likelihood": 30.0,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        }
+      ],
+      "path_count": 3,
+      "truncated": false,
+      "choke_points": [],
+      "achilles_heels": [
+        {
+          "node": "node.atc-read-config",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 26.666666666666664
+        },
+        {
+          "node": "node.atc-call-beyond-scope",
+          "paths": 2,
+          "share": 0.6666666666666666,
+          "criticality": 20.833333333333332
+        },
+        {
+          "node": "node.atc-inject-document",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 10.833333333333332
+        },
+        {
+          "node": "node.atc-inject-question",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 10.0
+        }
+      ],
+      "per_actor": {
+        "actor.employee": {
+          "paths": 1,
+          "likelihood": 30.0,
+          "most_likely": [
+            "node.atc-call-beyond-scope",
+            "node.atc-inject-question"
+          ],
+          "cheapest": [
+            "node.atc-call-beyond-scope",
+            "node.atc-inject-question"
+          ],
+          "cheapest_cost": 0
+        },
+        "actor.operator": {
+          "paths": 1,
+          "likelihood": 80.0,
+          "most_likely": [
+            "node.atc-read-config"
+          ],
+          "cheapest": [
+            "node.atc-read-config"
+          ],
+          "cheapest_cost": 0
+        },
+        "actor.outsider": {
+          "paths": 1,
+          "likelihood": 32.5,
+          "most_likely": [
+            "node.atc-call-beyond-scope",
+            "node.atc-inject-document"
+          ],
+          "cheapest": [
+            "node.atc-call-beyond-scope",
+            "node.atc-inject-document"
+          ],
+          "cheapest_cost": 100
+        }
+      },
+      "strongest_actor": "actor.operator",
+      "most_likely_path": [
+        "node.atc-read-config"
+      ],
+      "cheapest_path": [
+        "node.atc-read-config"
+      ],
+      "cheapest_cost": 0,
+      "uncontrolled_paths": 3
+    },
+    {
+      "id": "goal.deny-service",
+      "name": "Attacker exhausts assistant capacity for everyone",
+      "impact": "medium",
+      "feasible": true,
+      "unknown": false,
+      "assumed": [],
+      "likelihood": 85.0,
+      "likelihood_level": "very-high",
+      "risk": "high",
+      "accepted_paths": 0,
+      "residual_risk": "high",
+      "paths": [
+        {
+          "leaves": [
+            "node.ds-flood"
+          ],
+          "nodes": [
+            "goal.deny-service",
+            "node.ds-flood"
+          ],
+          "likelihood": 85.0,
+          "raw_likelihood": 85.0,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.ds-oversized"
+          ],
+          "nodes": [
+            "goal.deny-service",
+            "node.ds-oversized"
+          ],
+          "likelihood": 80.0,
+          "raw_likelihood": 80.0,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        }
+      ],
+      "path_count": 2,
+      "truncated": false,
+      "choke_points": [],
+      "achilles_heels": [
+        {
+          "node": "node.ds-flood",
+          "paths": 1,
+          "share": 0.5,
+          "criticality": 42.5
+        },
+        {
+          "node": "node.ds-oversized",
+          "paths": 1,
+          "share": 0.5,
+          "criticality": 40.0
+        }
+      ],
+      "per_actor": {
+        "actor.employee": {
+          "paths": 2,
+          "likelihood": 85.0,
+          "most_likely": [
+            "node.ds-flood"
+          ],
+          "cheapest": [
+            "node.ds-flood"
+          ],
+          "cheapest_cost": 0
+        }
+      },
+      "strongest_actor": "actor.employee",
+      "most_likely_path": [
+        "node.ds-flood"
+      ],
+      "cheapest_path": [
+        "node.ds-flood"
+      ],
+      "cheapest_cost": 0,
+      "uncontrolled_paths": 2
+    },
+    {
+      "id": "goal.forge-ticket",
+      "name": "Attacker creates a ticket the employee never asked for",
+      "impact": "high",
+      "feasible": true,
+      "unknown": false,
+      "assumed": [],
+      "likelihood": 55.0,
+      "likelihood_level": "high",
+      "risk": "high",
+      "accepted_paths": 0,
+      "residual_risk": "high",
+      "paths": [
+        {
+          "leaves": [
+            "node.ft-phish"
+          ],
+          "nodes": [
+            "goal.forge-ticket",
+            "node.ft-phish",
+            "node.ft-session-theft"
+          ],
+          "likelihood": 55.0,
+          "raw_likelihood": 55.0,
+          "cost": 500,
+          "actors": [
+            "actor.outsider"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.ft-replay"
+          ],
+          "nodes": [
+            "goal.forge-ticket",
+            "node.ft-replay",
+            "node.ft-session-theft"
+          ],
+          "likelihood": 35.0,
+          "raw_likelihood": 35.0,
+          "cost": 0,
+          "actors": [
+            "actor.outsider"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.ft-blind-confirmation",
+            "node.ft-inject-document"
+          ],
+          "nodes": [
+            "goal.forge-ticket",
+            "node.ft-blind-confirmation",
+            "node.ft-hijack",
+            "node.ft-inject",
+            "node.ft-inject-document",
+            "node.ft-pass-confirmation"
+          ],
+          "likelihood": 32.5,
+          "raw_likelihood": 32.5,
+          "cost": 100,
+          "actors": [
+            "actor.outsider"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.ft-inject-document",
+            "node.ft-no-confirmation"
+          ],
+          "nodes": [
+            "goal.forge-ticket",
+            "node.ft-hijack",
+            "node.ft-inject",
+            "node.ft-inject-document",
+            "node.ft-no-confirmation",
+            "node.ft-pass-confirmation"
+          ],
+          "likelihood": 29.2,
+          "raw_likelihood": 29.2,
+          "cost": 100,
+          "actors": [
+            "actor.outsider"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.ft-inject-question",
+            "node.ft-no-confirmation"
+          ],
+          "nodes": [
+            "goal.forge-ticket",
+            "node.ft-hijack",
+            "node.ft-inject",
+            "node.ft-inject-question",
+            "node.ft-no-confirmation",
+            "node.ft-pass-confirmation"
+          ],
+          "likelihood": 27.0,
+          "raw_likelihood": 27.0,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        }
+      ],
+      "path_count": 5,
+      "truncated": false,
+      "choke_points": [],
+      "achilles_heels": [
+        {
+          "node": "node.ft-inject-document",
+          "paths": 2,
+          "share": 0.4,
+          "criticality": 12.350000000000001
+        },
+        {
+          "node": "node.ft-no-confirmation",
+          "paths": 2,
+          "share": 0.4,
+          "criticality": 11.25
+        },
+        {
+          "node": "node.ft-phish",
+          "paths": 1,
+          "share": 0.2,
+          "criticality": 11.0
+        },
+        {
+          "node": "node.ft-replay",
+          "paths": 1,
+          "share": 0.2,
+          "criticality": 7.0
+        },
+        {
+          "node": "node.ft-blind-confirmation",
+          "paths": 1,
+          "share": 0.2,
+          "criticality": 6.5
+        }
+      ],
+      "per_actor": {
+        "actor.employee": {
+          "paths": 1,
+          "likelihood": 27.0,
+          "most_likely": [
+            "node.ft-inject-question",
+            "node.ft-no-confirmation"
+          ],
+          "cheapest": [
+            "node.ft-inject-question",
+            "node.ft-no-confirmation"
+          ],
+          "cheapest_cost": 0
+        },
+        "actor.outsider": {
+          "paths": 4,
+          "likelihood": 55.0,
+          "most_likely": [
+            "node.ft-phish"
+          ],
+          "cheapest": [
+            "node.ft-replay"
+          ],
+          "cheapest_cost": 0
+        }
+      },
+      "strongest_actor": "actor.outsider",
+      "most_likely_path": [
+        "node.ft-phish"
+      ],
+      "cheapest_path": [
+        "node.ft-replay"
+      ],
+      "cheapest_cost": 0,
+      "uncontrolled_paths": 5
+    },
+    {
+      "id": "goal.impersonate-employee",
+      "name": "Attacker acts as another employee towards the assistant or the ticket system",
+      "impact": "high",
+      "feasible": true,
+      "unknown": false,
+      "assumed": [],
+      "likelihood": 75.0,
+      "likelihood_level": "very-high",
+      "risk": "critical",
+      "accepted_paths": 0,
+      "residual_risk": "critical",
+      "paths": [
+        {
+          "leaves": [
+            "node.ie-reporter-from-text"
+          ],
+          "nodes": [
+            "goal.impersonate-employee",
+            "node.ie-reporter-from-text"
+          ],
+          "likelihood": 75.0,
+          "raw_likelihood": 75.0,
+          "cost": 0,
+          "actors": [
+            "actor.content-author",
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.ie-session-replay"
+          ],
+          "nodes": [
+            "goal.impersonate-employee",
+            "node.ie-session-replay"
+          ],
+          "likelihood": 40.0,
+          "raw_likelihood": 40.0,
+          "cost": 0,
+          "actors": [
+            "actor.outsider"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.ie-in-transit"
+          ],
+          "nodes": [
+            "goal.impersonate-employee",
+            "node.ie-in-transit"
+          ],
+          "likelihood": 20.0,
+          "raw_likelihood": 20.0,
+          "cost": 20000,
+          "actors": [
+            "actor.outsider"
+          ],
+          "controls": [],
+          "accepted": false
+        }
+      ],
+      "path_count": 3,
+      "truncated": false,
+      "choke_points": [],
+      "achilles_heels": [
+        {
+          "node": "node.ie-reporter-from-text",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 25.0
+        },
+        {
+          "node": "node.ie-session-replay",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 13.333333333333332
+        },
+        {
+          "node": "node.ie-in-transit",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 6.666666666666666
+        }
+      ],
+      "per_actor": {
+        "actor.content-author": {
+          "paths": 1,
+          "likelihood": 75.0,
+          "most_likely": [
+            "node.ie-reporter-from-text"
+          ],
+          "cheapest": [
+            "node.ie-reporter-from-text"
+          ],
+          "cheapest_cost": 0
+        },
+        "actor.employee": {
+          "paths": 1,
+          "likelihood": 75.0,
+          "most_likely": [
+            "node.ie-reporter-from-text"
+          ],
+          "cheapest": [
+            "node.ie-reporter-from-text"
+          ],
+          "cheapest_cost": 0
+        },
+        "actor.outsider": {
+          "paths": 2,
+          "likelihood": 40.0,
+          "most_likely": [
+            "node.ie-session-replay"
+          ],
+          "cheapest": [
+            "node.ie-session-replay"
+          ],
+          "cheapest_cost": 0
+        }
+      },
+      "strongest_actor": "actor.employee",
+      "most_likely_path": [
+        "node.ie-reporter-from-text"
+      ],
+      "cheapest_path": [
+        "node.ie-reporter-from-text"
+      ],
+      "cheapest_cost": 0,
+      "uncontrolled_paths": 3
+    },
+    {
+      "id": "goal.poison-answers",
+      "name": "Attacker makes the assistant present attacker-chosen content as fact",
+      "impact": "high",
+      "feasible": true,
+      "unknown": false,
+      "assumed": [],
+      "likelihood": 80.0,
+      "likelihood_level": "very-high",
+      "risk": "critical",
+      "accepted_paths": 0,
+      "residual_risk": "critical",
+      "paths": [
+        {
+          "leaves": [
+            "node.pa-store-tamper"
+          ],
+          "nodes": [
+            "goal.poison-answers",
+            "node.pa-store-tamper"
+          ],
+          "likelihood": 80.0,
+          "raw_likelihood": 80.0,
+          "cost": 0,
+          "actors": [
+            "actor.operator"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.pa-inject-document"
+          ],
+          "nodes": [
+            "goal.poison-answers",
+            "node.pa-inject-document"
+          ],
+          "likelihood": 65.0,
+          "raw_likelihood": 65.0,
+          "cost": 100,
+          "actors": [
+            "actor.content-author"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.pa-unauthorized-publish"
+          ],
+          "nodes": [
+            "goal.poison-answers",
+            "node.pa-unauthorized-publish"
+          ],
+          "likelihood": 60.0,
+          "raw_likelihood": 60.0,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        }
+      ],
+      "path_count": 3,
+      "truncated": false,
+      "choke_points": [],
+      "achilles_heels": [
+        {
+          "node": "node.pa-store-tamper",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 26.666666666666664
+        },
+        {
+          "node": "node.pa-inject-document",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 21.666666666666664
+        },
+        {
+          "node": "node.pa-unauthorized-publish",
+          "paths": 1,
+          "share": 0.3333333333333333,
+          "criticality": 20.0
+        }
+      ],
+      "per_actor": {
+        "actor.content-author": {
+          "paths": 1,
+          "likelihood": 65.0,
+          "most_likely": [
+            "node.pa-inject-document"
+          ],
+          "cheapest": [
+            "node.pa-inject-document"
+          ],
+          "cheapest_cost": 100
+        },
+        "actor.employee": {
+          "paths": 1,
+          "likelihood": 60.0,
+          "most_likely": [
+            "node.pa-unauthorized-publish"
+          ],
+          "cheapest": [
+            "node.pa-unauthorized-publish"
+          ],
+          "cheapest_cost": 0
+        },
+        "actor.operator": {
+          "paths": 1,
+          "likelihood": 80.0,
+          "most_likely": [
+            "node.pa-store-tamper"
+          ],
+          "cheapest": [
+            "node.pa-store-tamper"
+          ],
+          "cheapest_cost": 0
+        }
+      },
+      "strongest_actor": "actor.operator",
+      "most_likely_path": [
+        "node.pa-store-tamper"
+      ],
+      "cheapest_path": [
+        "node.pa-store-tamper"
+      ],
+      "cheapest_cost": 0,
+      "uncontrolled_paths": 3
+    },
+    {
+      "id": "goal.read-restricted-documents",
+      "name": "Attacker reads documents outside their visibility",
+      "impact": "critical",
+      "feasible": true,
+      "unknown": false,
+      "assumed": [
+        "node.rrd-admin-export"
+      ],
+      "likelihood": 59.5,
+      "likelihood_level": "high",
+      "risk": "critical",
+      "accepted_paths": 0,
+      "residual_risk": "critical",
+      "paths": [
+        {
+          "leaves": [
+            "node.rrd-answer-quotes",
+            "node.rrd-ask-directly"
+          ],
+          "nodes": [
+            "goal.read-restricted-documents",
+            "node.rrd-answer-quotes",
+            "node.rrd-ask-directly",
+            "node.rrd-egress",
+            "node.rrd-reach"
+          ],
+          "likelihood": 59.5,
+          "raw_likelihood": 59.5,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.rrd-answer-quotes",
+            "node.rrd-inject-question"
+          ],
+          "nodes": [
+            "goal.read-restricted-documents",
+            "node.rrd-answer-quotes",
+            "node.rrd-egress",
+            "node.rrd-inject-question",
+            "node.rrd-reach"
+          ],
+          "likelihood": 51.0,
+          "raw_likelihood": 51.0,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.rrd-ask-directly",
+            "node.rrd-ticket-copies"
+          ],
+          "nodes": [
+            "goal.read-restricted-documents",
+            "node.rrd-ask-directly",
+            "node.rrd-egress",
+            "node.rrd-reach",
+            "node.rrd-ticket-copies"
+          ],
+          "likelihood": 31.5,
+          "raw_likelihood": 31.5,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.rrd-inject-document",
+            "node.rrd-ticket-copies"
+          ],
+          "nodes": [
+            "goal.read-restricted-documents",
+            "node.rrd-egress",
+            "node.rrd-inject-document",
+            "node.rrd-reach",
+            "node.rrd-ticket-copies"
+          ],
+          "likelihood": 29.2,
+          "raw_likelihood": 29.2,
+          "cost": 100,
+          "actors": [
+            "actor.outsider"
+          ],
+          "controls": [],
+          "accepted": false
+        },
+        {
+          "leaves": [
+            "node.rrd-inject-question",
+            "node.rrd-ticket-copies"
+          ],
+          "nodes": [
+            "goal.read-restricted-documents",
+            "node.rrd-egress",
+            "node.rrd-inject-question",
+            "node.rrd-reach",
+            "node.rrd-ticket-copies"
+          ],
+          "likelihood": 27.0,
+          "raw_likelihood": 27.0,
+          "cost": 0,
+          "actors": [
+            "actor.employee"
+          ],
+          "controls": [],
+          "accepted": false
+        }
+      ],
+      "path_count": 5,
+      "truncated": false,
+      "choke_points": [
+        "node.rrd-egress",
+        "node.rrd-reach"
+      ],
+      "achilles_heels": [
+        {
+          "node": "node.rrd-answer-quotes",
+          "paths": 2,
+          "share": 0.4,
+          "criticality": 22.1
+        },
+        {
+          "node": "node.rrd-ask-directly",
+          "paths": 2,
+          "share": 0.4,
+          "criticality": 18.2
+        },
+        {
+          "node": "node.rrd-ticket-copies",
+          "paths": 3,
+          "share": 0.6,
+          "criticality": 17.55
+        },
+        {
+          "node": "node.rrd-inject-question",
+          "paths": 2,
+          "share": 0.4,
+          "criticality": 15.600000000000001
+        },
+        {
+          "node": "node.rrd-inject-document",
+          "paths": 1,
+          "share": 0.2,
+          "criticality": 5.8500000000000005
+        }
+      ],
+      "per_actor": {
+        "actor.employee": {
+          "paths": 4,
+          "likelihood": 59.5,
+          "most_likely": [
+            "node.rrd-answer-quotes",
+            "node.rrd-ask-directly"
+          ],
+          "cheapest": [
+            "node.rrd-answer-quotes",
+            "node.rrd-ask-directly"
+          ],
+          "cheapest_cost": 0
+        },
+        "actor.outsider": {
+          "paths": 1,
+          "likelihood": 29.2,
+          "most_likely": [
+            "node.rrd-inject-document",
+            "node.rrd-ticket-copies"
+          ],
+          "cheapest": [
+            "node.rrd-inject-document",
+            "node.rrd-ticket-copies"
+          ],
+          "cheapest_cost": 100
+        }
+      },
+      "strongest_actor": "actor.employee",
+      "most_likely_path": [
+        "node.rrd-answer-quotes",
+        "node.rrd-ask-directly"
+      ],
+      "cheapest_path": [
+        "node.rrd-answer-quotes",
+        "node.rrd-ask-directly"
+      ],
+      "cheapest_cost": 0,
+      "uncontrolled_paths": 5
+    }
+  ],
+  "goals_by_risk": {
+    "critical": 4,
+    "high": 2
+  },
+  "what_if": [
+    {
+      "control": "control.visibility-filtered-retrieval",
+      "name": "Retrieval applies the asking employee's visibility before ranking; answers never cite or quote documents the employee cannot read",
+      "status": "proposed",
+      "cost": "medium",
+      "risk_reduction": 4.76,
+      "depth_reduction": 15.86,
+      "efficiency": 1.5867,
+      "goals": [
+        "goal.read-restricted-documents"
+      ],
+      "goals_deepened": [
+        "goal.read-restricted-documents"
+      ],
+      "residual": {
+        "goal.read-restricted-documents": 0.0
+      },
+      "class": "quick win"
+    },
+    {
+      "control": "control.reporter-from-session",
+      "name": "The ticket reporter is derived from the authenticated SSO identity of the session, never from model output or the question",
+      "status": "proposed",
+      "cost": "low",
+      "risk_reduction": 1.4,
+      "depth_reduction": 3.0,
+      "efficiency": 1.4,
+      "goals": [
+        "goal.impersonate-employee"
+      ],
+      "goals_deepened": [
+        "goal.impersonate-employee"
+      ],
+      "residual": {
+        "goal.impersonate-employee": 40.0
+      },
+      "class": "quick win"
+    },
+    {
+      "control": "control.rate-and-size-limits",
+      "name": "Per-employee rate limit and maximum question length enforced before retrieval or generation",
+      "status": "proposed",
+      "cost": "low",
+      "risk_reduction": 1.36,
+      "depth_reduction": 2.64,
+      "efficiency": 1.36,
+      "goals": [
+        "goal.deny-service"
+      ],
+      "goals_deepened": [
+        "goal.deny-service"
+      ],
+      "residual": {
+        "goal.deny-service": 17.0
+      },
+      "class": "quick win"
+    },
+    {
+      "control": "control.validate-sso-per-request",
+      "name": "Every request is authenticated by validating a current SSO assertion server-side",
+      "status": "proposed",
+      "cost": "low",
+      "risk_reduction": 0.9,
+      "depth_reduction": 4.16,
+      "efficiency": 0.9,
+      "goals": [
+        "goal.forge-ticket"
+      ],
+      "goals_deepened": [
+        "goal.forge-ticket",
+        "goal.impersonate-employee"
+      ],
+      "residual": {
+        "goal.forge-ticket": 32.5
+      },
+      "class": "fill-in"
+    },
+    {
+      "control": "control.ticket-audit-record",
+      "name": "Every ticket creation writes an append-only audit record with employee, conversation, ticket, and confirmation reference",
+      "status": "proposed",
+      "cost": "low",
+      "risk_reduction": 0.55,
+      "depth_reduction": 1.788,
+      "efficiency": 0.55,
+      "goals": [
+        "goal.forge-ticket"
+      ],
+      "goals_deepened": [
+        "goal.forge-ticket"
+      ],
+      "residual": {
+        "goal.forge-ticket": 41.2
+      },
+      "class": "fill-in"
+    },
+    {
+      "control": "control.secrets-manager",
+      "name": "The ticket API credential lives in a managed vault with access logged; never in configuration files",
+      "status": "proposed",
+      "cost": "medium",
+      "risk_reduction": 1.6,
+      "depth_reduction": 1.6,
+      "efficiency": 0.5333,
+      "goals": [
+        "goal.abuse-ticket-credential"
+      ],
+      "goals_deepened": [
+        "goal.abuse-ticket-credential"
+      ],
+      "residual": {
+        "goal.abuse-ticket-credential": 40.0
+      },
+      "class": "quick win"
+    },
+    {
+      "control": "control.least-privilege-kb-storage",
+      "name": "Only the publish path holds write credentials to the knowledge base; the assistant and retrieval are read-only",
+      "status": "proposed",
+      "cost": "medium",
+      "risk_reduction": 0.6,
+      "depth_reduction": 2.56,
+      "efficiency": 0.2,
+      "goals": [
+        "goal.poison-answers"
+      ],
+      "goals_deepened": [
+        "goal.poison-answers"
+      ],
+      "residual": {
+        "goal.poison-answers": 65.0
+      },
+      "class": "fill-in"
+    },
+    {
+      "control": "control.ticket-confirmation",
+      "name": "The ticket tool executes only after an explicit, single-use confirmation from the requesting employee in the same conversation",
+      "status": "proposed",
+      "cost": "low",
+      "risk_reduction": 0.0,
+      "depth_reduction": 7.416,
+      "efficiency": 0.0,
+      "goals": [],
+      "goals_deepened": [
+        "goal.forge-ticket",
+        "goal.read-restricted-documents"
+      ],
+      "residual": {},
+      "class": "defence in depth"
+    },
+    {
+      "control": "control.untrusted-context-delimiting",
+      "name": "Retrieved documents and questions are delimited as untrusted data with their source; instructions never come from content",
+      "status": "proposed",
+      "cost": "medium",
+      "risk_reduction": 0.0,
+      "depth_reduction": 7.315,
+      "efficiency": 0.0,
+      "goals": [],
+      "goals_deepened": [
+        "goal.abuse-ticket-credential",
+        "goal.forge-ticket",
+        "goal.read-restricted-documents"
+      ],
+      "residual": {},
+      "class": "defence in depth"
+    },
+    {
+      "control": "control.confirmation-shows-exact-fields",
+      "name": "The confirmation prompt shows the exact reporter, summary, and description that will be submitted, and the created ticket equals what was shown",
+      "status": "proposed",
+      "cost": "low",
+      "risk_reduction": 0.0,
+      "depth_reduction": 4.16,
+      "efficiency": 0.0,
+      "goals": [],
+      "goals_deepened": [
+        "goal.forge-ticket",
+        "goal.read-restricted-documents"
+      ],
+      "residual": {},
+      "class": "defence in depth"
+    },
+    {
+      "control": "control.ticket-tool-least-privilege",
+      "name": "The ticket tool uses a credential scoped to ticket creation only, ideally per user and short-lived",
+      "status": "proposed",
+      "cost": "medium",
+      "risk_reduction": 0.0,
+      "depth_reduction": 2.5,
+      "efficiency": 0.0,
+      "goals": [],
+      "goals_deepened": [
+        "goal.abuse-ticket-credential"
+      ],
+      "residual": {},
+      "class": "defence in depth"
+    },
+    {
+      "control": "control.author-only-publish",
+      "name": "The publish path checks the content-author role and denies by default",
+      "status": "proposed",
+      "cost": "low",
+      "risk_reduction": 0.0,
+      "depth_reduction": 1.92,
+      "efficiency": 0.0,
+      "goals": [],
+      "goals_deepened": [
+        "goal.poison-answers"
+      ],
+      "residual": {},
+      "class": "defence in depth"
+    },
+    {
+      "control": "control.tls-everywhere",
+      "name": "TLS on every hop between employee, assistant, knowledge base, and ticket API; plaintext refused",
+      "status": "proposed",
+      "cost": "low",
+      "risk_reduction": 0.0,
+      "depth_reduction": 0.8,
+      "efficiency": 0.0,
+      "goals": [],
+      "goals_deepened": [
+        "goal.impersonate-employee"
+      ],
+      "residual": {},
+      "class": "defence in depth"
+    },
+    {
+      "control": "control.corpus-validation",
+      "name": "Ingestion moderates published content for instruction-like text and flags it for review",
+      "status": "proposed",
+      "cost": "medium",
+      "risk_reduction": 0.0,
+      "depth_reduction": 0.65,
+      "efficiency": 0.0,
+      "goals": [],
+      "goals_deepened": [
+        "goal.poison-answers"
+      ],
+      "residual": {},
+      "class": "defence in depth"
+    }
+  ],
+  "roadmap": [
+    {
+      "step": 1,
+      "control": "control.visibility-filtered-retrieval",
+      "risk_reduction": 4.76,
+      "efficiency": 1.5867,
+      "residual": {
+        "goal.abuse-ticket-credential": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.deny-service": {
+          "likelihood": 85.0,
+          "risk": "high"
+        },
+        "goal.forge-ticket": {
+          "likelihood": 55.0,
+          "risk": "high"
+        },
+        "goal.impersonate-employee": {
+          "likelihood": 75.0,
+          "risk": "critical"
+        },
+        "goal.poison-answers": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.read-restricted-documents": {
+          "likelihood": 0.0,
+          "risk": "high"
+        }
+      }
+    },
+    {
+      "step": 2,
+      "control": "control.reporter-from-session",
+      "risk_reduction": 1.4,
+      "efficiency": 1.4,
+      "residual": {
+        "goal.abuse-ticket-credential": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.deny-service": {
+          "likelihood": 85.0,
+          "risk": "high"
+        },
+        "goal.forge-ticket": {
+          "likelihood": 55.0,
+          "risk": "high"
+        },
+        "goal.impersonate-employee": {
+          "likelihood": 40.0,
+          "risk": "high"
+        },
+        "goal.poison-answers": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.read-restricted-documents": {
+          "likelihood": 0.0,
+          "risk": "high"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "control": "control.validate-sso-per-request",
+      "risk_reduction": 1.7,
+      "efficiency": 1.7,
+      "residual": {
+        "goal.abuse-ticket-credential": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.deny-service": {
+          "likelihood": 85.0,
+          "risk": "high"
+        },
+        "goal.forge-ticket": {
+          "likelihood": 32.5,
+          "risk": "medium"
+        },
+        "goal.impersonate-employee": {
+          "likelihood": 20.0,
+          "risk": "medium"
+        },
+        "goal.poison-answers": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.read-restricted-documents": {
+          "likelihood": 0.0,
+          "risk": "high"
+        }
+      }
+    },
+    {
+      "step": 4,
+      "control": "control.rate-and-size-limits",
+      "risk_reduction": 1.36,
+      "efficiency": 1.36,
+      "residual": {
+        "goal.abuse-ticket-credential": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.deny-service": {
+          "likelihood": 17.0,
+          "risk": "medium"
+        },
+        "goal.forge-ticket": {
+          "likelihood": 32.5,
+          "risk": "medium"
+        },
+        "goal.impersonate-employee": {
+          "likelihood": 20.0,
+          "risk": "medium"
+        },
+        "goal.poison-answers": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.read-restricted-documents": {
+          "likelihood": 0.0,
+          "risk": "high"
+        }
+      }
+    },
+    {
+      "step": 5,
+      "control": "control.secrets-manager",
+      "risk_reduction": 1.6,
+      "efficiency": 0.5333,
+      "residual": {
+        "goal.abuse-ticket-credential": {
+          "likelihood": 40.0,
+          "risk": "high"
+        },
+        "goal.deny-service": {
+          "likelihood": 17.0,
+          "risk": "medium"
+        },
+        "goal.forge-ticket": {
+          "likelihood": 32.5,
+          "risk": "medium"
+        },
+        "goal.impersonate-employee": {
+          "likelihood": 20.0,
+          "risk": "medium"
+        },
+        "goal.poison-answers": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.read-restricted-documents": {
+          "likelihood": 0.0,
+          "risk": "high"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "control": "control.ticket-audit-record",
+      "risk_reduction": 0.325,
+      "efficiency": 0.325,
+      "residual": {
+        "goal.abuse-ticket-credential": {
+          "likelihood": 40.0,
+          "risk": "high"
+        },
+        "goal.deny-service": {
+          "likelihood": 17.0,
+          "risk": "medium"
+        },
+        "goal.forge-ticket": {
+          "likelihood": 24.4,
+          "risk": "medium"
+        },
+        "goal.impersonate-employee": {
+          "likelihood": 20.0,
+          "risk": "medium"
+        },
+        "goal.poison-answers": {
+          "likelihood": 80.0,
+          "risk": "critical"
+        },
+        "goal.read-restricted-documents": {
+          "likelihood": 0.0,
+          "risk": "high"
+        }
+      }
+    },
+    {
+      "step": 7,
+      "control": "control.least-privilege-kb-storage",
+      "risk_reduction": 0.6,
+      "efficiency": 0.2,
+      "residual": {
+        "goal.abuse-ticket-credential": {
+          "likelihood": 40.0,
+          "risk": "high"
+        },
+        "goal.deny-service": {
+          "likelihood": 17.0,
+          "risk": "medium"
+        },
+        "goal.forge-ticket": {
+          "likelihood": 24.4,
+          "risk": "medium"
+        },
+        "goal.impersonate-employee": {
+          "likelihood": 20.0,
+          "risk": "medium"
+        },
+        "goal.poison-answers": {
+          "likelihood": 65.0,
+          "risk": "high"
+        },
+        "goal.read-restricted-documents": {
+          "likelihood": 0.0,
+          "risk": "high"
+        }
+      }
+    }
+  ],
+  "single_points_of_failure": [],
+  "truncated": [],
+  "uncovered_choke_points": [
+    {
+      "goal": "goal.read-restricted-documents",
+      "node": "node.rrd-egress"
+    },
+    {
+      "goal": "goal.read-restricted-documents",
+      "node": "node.rrd-reach"
+    }
+  ],
+  "monte_carlo": {
+    "iterations": 2000,
+    "seed": 42,
+    "spread": 15.0,
+    "probabilistic_controls": [],
+    "goals": {
+      "goal.abuse-ticket-credential": {
+        "mean": 80.0,
+        "p50": 79.9,
+        "p90": 88.6,
+        "p_at_least_high": 1.0,
+        "drivers": [
+          {
+            "node": "node.atc-read-config",
+            "correlation": 1.0
+          },
+          {
+            "node": "node.ft-blind-confirmation",
+            "correlation": 0.06
+          }
+        ]
+      },
+      "goal.deny-service": {
+        "mean": 86.5,
+        "p50": 86.5,
+        "p90": 93.3,
+        "p_at_least_high": 1.0,
+        "drivers": [
+          {
+            "node": "node.ds-flood",
+            "correlation": 0.85
+          },
+          {
+            "node": "node.ds-oversized",
+            "correlation": 0.35
+          }
+        ]
+      },
+      "goal.forge-ticket": {
+        "mean": 55.0,
+        "p50": 54.9,
+        "p90": 63.6,
+        "p_at_least_high": 1.0,
+        "drivers": [
+          {
+            "node": "node.ft-phish",
+            "correlation": 1.0
+          }
+        ]
+      },
+      "goal.impersonate-employee": {
+        "mean": 74.9,
+        "p50": 75.1,
+        "p90": 83.3,
+        "p_at_least_high": 1.0,
+        "drivers": [
+          {
+            "node": "node.ie-reporter-from-text",
+            "correlation": 1.0
+          }
+        ]
+      },
+      "goal.poison-answers": {
+        "mean": 80.0,
+        "p50": 79.9,
+        "p90": 88.0,
+        "p_at_least_high": 1.0,
+        "drivers": [
+          {
+            "node": "node.pa-store-tamper",
+            "correlation": 0.99
+          },
+          {
+            "node": "node.ft-blind-confirmation",
+            "correlation": 0.05
+          },
+          {
+            "node": "node.pa-inject-document",
+            "correlation": 0.05
+          }
+        ]
+      },
+      "goal.read-restricted-documents": {
+        "mean": 59.8,
+        "p50": 59.5,
+        "p90": 68.3,
+        "p_at_least_high": 1.0,
+        "drivers": [
+          {
+            "node": "node.rrd-ask-directly",
+            "correlation": 0.71
+          },
+          {
+            "node": "node.rrd-answer-quotes",
+            "correlation": 0.64
+          },
+          {
+            "node": "node.rrd-inject-question",
+            "correlation": 0.07
+          },
+          {
+            "node": "node.ie-reporter-from-text",
+            "correlation": 0.06
+          }
+        ]
+      }
+    }
+  }
+}
