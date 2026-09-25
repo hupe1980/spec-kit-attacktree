@@ -1753,7 +1753,7 @@ def render_markdown(model: Dict[str, Any], view: Dict[str, Any], paths: Paths, c
             L.append(f"**Most likely path**: {' + '.join(f'`{l}`' for l in sg['most_likely_path'])} (likelihood {sg['likelihood']}) · "
                      f"**Cheapest path**: {' + '.join(f'`{l}`' for l in sg['cheapest_path'])} (cost {sg['cheapest_cost']})")
             L.append(f"**Choke points**: {', '.join(f'`{c}`' for c in sg['choke_points']) or '— none —'} · "
-                     f"**Achilles heels**: {', '.join(f'`{a['node']}` ({a['paths']}/{sg['path_count']} paths)' for a in sg['achilles_heels']) or '—'}")
+                     "**Achilles heels**: " + (", ".join(f"`{a['node']}` ({a['paths']}/{sg['path_count']} paths)" for a in sg["achilles_heels"]) or "—"))
             L += ["", "| Path | Leaves | Likelihood | Cost | Feasible for | Controls on path |", "|---|---|---|---|---|---|"]
             for i, p in enumerate(sg["paths"][:10], 1):
                 L.append(f"| P{i} | {' + '.join(f'`{l}`' for l in p['leaves'])} | {p['likelihood']} | {p['cost']} | {', '.join(p['actors'])} | "
