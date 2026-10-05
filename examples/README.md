@@ -1,5 +1,7 @@
 # Examples
 
+A guided tour of this example is in the [quickstart](https://hupe1980.github.io/spec-kit-attacktree/docs/quickstart/).
+
 ## `agent-assistant`
 
 An internal assistant that answers questions from a knowledge base and can open support tickets. The feature directory `specs/001-agent-assistant/` shows what AttackTree produces from `spec.md` alone **before any plan exists** and before any control is built:
@@ -10,9 +12,9 @@ An internal assistant that answers questions from a knowledge base and can open 
 | `attack-tree.yaml` | `/speckit-attacktree-model` (first pass, profiles `default`, `agentic`) | 4 actors with capabilities, 4 assets, 6 goals with per-class impact, 23 attack vectors under AND/OR nodes plus 1 `needs-clarification` node, 14 controls (2 probabilistic) with validation steps, 14 requirements with Given/When/Then acceptance |
 | `attack-tree.md` | `attacktree.sh render` | The human view: per goal the outline, a Mermaid diagram with controls attached, paths with feasible actors, choke points and Achilles heels; then the controls table and the what-if roadmap |
 | `security/attacktree-check-report.md` | `attacktree.sh check --persist` | One A14 finding (the open question) and one aggregated A9 line; nothing HIGH or CRITICAL |
-| `security/attacktree-simulation.md` | `attacktree.sh simulate --persist` | With every control still `proposed`: four goals at critical residual risk, one uncovered choke point, the what-if table ranking the 14 controls, the greedy roadmap, and the Monte Carlo summary |
+| `security/attacktree-simulation.md` | `attacktree.sh simulate --persist` | With every control still `proposed`: four goals at critical residual risk, two uncovered choke points on the critical goal, the what-if table ranking the 14 controls, the greedy roadmap, and the Monte Carlo summary |
 
-Two things the tree makes visible that a flat list of threats would not: `goal.read-restricted-documents` is an AND of "get restricted content into the context" and "get it out", so `node.rrd-reach` is a choke point where one control (visibility-filtered retrieval) cuts every path; and the operator's direct access to the store and the credential (`node.pa-store-tamper`, `node.atc-read-config`) is the most likely path to two goals, which a per-element enumeration lists but does not rank.
+Two things the tree makes visible that a flat list of threats would not. First, `goal.read-restricted-documents` is an AND of "get restricted content into the context" and "get it out", so `node.rrd-reach` is a choke point where one control, visibility-filtered retrieval, cuts every path. Second, the operator's direct access to the store and to the credential (`node.pa-store-tamper`, `node.atc-read-config`) is the most likely path to two goals. A per-element list names these risks but does not rank them.
 
 The tree was written as a realistic first pass, not a curated ideal: the check command's semantic passes still find things to improve (a second control on the critical goal's most likely path, ratings that deserve a measurement), and that is the point of the workflow.
 

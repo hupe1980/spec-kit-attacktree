@@ -122,5 +122,5 @@ def test_catalog_json_agrees_with_manifest():
 
 def test_extensionignore_excludes_development_content():
     ignore = (ROOT / ".extensionignore").read_text(encoding="utf-8").splitlines()
-    for entry in ("tests/", "docs/", "examples/", "preset/", "workflow/", ".github/", "action.yml", "catalog.json"):
+    for entry in ("tests/", "site/", "examples/", "preset/", "workflow/", ".github/", "action.yml", "catalog.json"):
         assert entry in ignore, entry

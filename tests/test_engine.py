@@ -850,3 +850,16 @@ def test_init_stores_posix_baseline_path(engine, agent_repo, capsys):
     model = engine.load_model(feature / "attack-tree.yaml")
     assert model["attacktree"]["extends"] == "../../.specify/memory/attack-tree.yaml"
     assert engine.load_baseline(model, feature / "attack-tree.yaml")["project"]["id"] == "base"
+
+
+def test_zero_likelihood_is_low_risk_even_for_critical_goals(engine, agent_repo, agent_feature):
+    sim = sim_for(engine, agent_repo, agent_feature, apply=["control.visibility-filtered-retrieval"], scenario="none")
+    ex = next(g for g in sim["goals"] if g["id"] == "goal.exfiltrate-documents")
+    assert ex["impact"] == "critical" and ex["likelihood"] > 0 and ex["risk"] in ("medium", "high")
+    m = engine.load_model(engine.Paths(agent_repo, agent_feature).model)
+    for n in m["nodes"]:
+        if n.get("attack"):
+            n["attack"]["likelihood"] = 0
+    scales = engine.scales_of(engine.load_profiles(["default"]))
+    sim = engine.simulate(m, engine.load_config(agent_repo), scales, with_monte_carlo=False)
+    assert all(g["likelihood"] == 0.0 and g["risk"] == "low" for g in sim["goals"])

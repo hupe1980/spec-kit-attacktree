@@ -1,8 +1,9 @@
 # AttackTree configuration
-# Copy to .specify/extensions/attacktree/attacktree-config.yml and adjust.
+# `specify extension add attacktree` installs this file as .specify/extensions/attacktree/attacktree-config.yml.
+# Edit and commit it; every key is optional and shown with its default.
 # Local overrides: attacktree-config.local.yml (gitignored).
 # Environment overrides: SPECKIT_ATTACKTREE_ENFORCEMENT, SPECKIT_ATTACKTREE_PROFILES, SPECKIT_ATTACKTREE_SCENARIO.
-# Reference: docs/configuration.md
+# Reference: https://hupe1980.github.io/spec-kit-attacktree/docs/configuration/
 
 # Profiles supply the capability scales, complexity levels, control effect levels, impact classes,
 # the risk matrix, and proposal libraries (attack vectors with CAPEC ids, controls with ASVS ids).

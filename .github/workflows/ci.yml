@@ -59,3 +59,14 @@ jobs:
           test -f .claude/skills/speckit-attacktree-model/SKILL.md || test -f .claude/commands/speckit.attacktree.model.md
           specify preset add --dev "$GITHUB_WORKSPACE/preset/attacktree-sdd"
           specify workflow add --dev "$GITHUB_WORKSPACE/workflow/attacktree-sdd"
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Zola
+        run: curl -sSfL "https://github.com/getzola/zola/releases/download/v0.23.4/zola-v0.23.4-x86_64-unknown-linux-gnu.tar.gz" | tar -xz -C /usr/local/bin zola
+      - name: Build and check links
+        run: |
+          zola --root site build
+          zola --root site check

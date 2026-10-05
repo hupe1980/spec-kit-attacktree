@@ -112,13 +112,13 @@ Risk reduction lowers a goal's best path; depth reduction cuts alternative paths
 
 | Step | Control | Risk reduction | Residual risk per goal |
 |---|---|---|---|
-| 1 | `control.visibility-filtered-retrieval` | 4.76 | goal.abuse-ticket-credential 80.0 (critical), goal.deny-service 85.0 (high), goal.forge-ticket 55.0 (high), goal.impersonate-employee 75.0 (critical), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (high) |
-| 2 | `control.reporter-from-session` | 1.4 | goal.abuse-ticket-credential 80.0 (critical), goal.deny-service 85.0 (high), goal.forge-ticket 55.0 (high), goal.impersonate-employee 40.0 (high), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (high) |
-| 3 | `control.validate-sso-per-request` | 1.7 | goal.abuse-ticket-credential 80.0 (critical), goal.deny-service 85.0 (high), goal.forge-ticket 32.5 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (high) |
-| 4 | `control.rate-and-size-limits` | 1.36 | goal.abuse-ticket-credential 80.0 (critical), goal.deny-service 17.0 (medium), goal.forge-ticket 32.5 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (high) |
-| 5 | `control.secrets-manager` | 1.6 | goal.abuse-ticket-credential 40.0 (high), goal.deny-service 17.0 (medium), goal.forge-ticket 32.5 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (high) |
-| 6 | `control.ticket-audit-record` | 0.325 | goal.abuse-ticket-credential 40.0 (high), goal.deny-service 17.0 (medium), goal.forge-ticket 24.4 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (high) |
-| 7 | `control.least-privilege-kb-storage` | 0.6 | goal.abuse-ticket-credential 40.0 (high), goal.deny-service 17.0 (medium), goal.forge-ticket 24.4 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 65.0 (high), goal.read-restricted-documents 0.0 (high) |
+| 1 | `control.visibility-filtered-retrieval` | 4.76 | goal.abuse-ticket-credential 80.0 (critical), goal.deny-service 85.0 (high), goal.forge-ticket 55.0 (high), goal.impersonate-employee 75.0 (critical), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (low) |
+| 2 | `control.reporter-from-session` | 1.4 | goal.abuse-ticket-credential 80.0 (critical), goal.deny-service 85.0 (high), goal.forge-ticket 55.0 (high), goal.impersonate-employee 40.0 (high), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (low) |
+| 3 | `control.validate-sso-per-request` | 1.7 | goal.abuse-ticket-credential 80.0 (critical), goal.deny-service 85.0 (high), goal.forge-ticket 32.5 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (low) |
+| 4 | `control.rate-and-size-limits` | 1.36 | goal.abuse-ticket-credential 80.0 (critical), goal.deny-service 17.0 (medium), goal.forge-ticket 32.5 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (low) |
+| 5 | `control.secrets-manager` | 1.6 | goal.abuse-ticket-credential 40.0 (high), goal.deny-service 17.0 (medium), goal.forge-ticket 32.5 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (low) |
+| 6 | `control.ticket-audit-record` | 0.325 | goal.abuse-ticket-credential 40.0 (high), goal.deny-service 17.0 (medium), goal.forge-ticket 24.4 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 80.0 (critical), goal.read-restricted-documents 0.0 (low) |
+| 7 | `control.least-privilege-kb-storage` | 0.6 | goal.abuse-ticket-credential 40.0 (high), goal.deny-service 17.0 (medium), goal.forge-ticket 24.4 (medium), goal.impersonate-employee 20.0 (medium), goal.poison-answers 65.0 (high), goal.read-restricted-documents 0.0 (low) |
 
 ### Monte Carlo (2000 iterations, seed 42, ±15.0 points)
 

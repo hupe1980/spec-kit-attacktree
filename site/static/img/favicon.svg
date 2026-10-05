@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>.e{stroke:#475569}.n{fill:#475569}@media (prefers-color-scheme:dark){.e{stroke:#cbd5e1}.n{fill:#cbd5e1}}</style>
+  <path class="e" d="M16 7 L8 17 M8 17 L5 26 M8 17 L12 26 M24 17 L20 26" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M16 7 L24 17 L27 26" stroke="#dc2626" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <circle cx="16" cy="6" r="3.6" fill="#dc2626"/><circle cx="24" cy="17" r="2.8" fill="#dc2626"/><circle cx="27" cy="26" r="2.4" fill="#dc2626"/>
+  <circle class="n" cx="8" cy="17" r="2.8"/><circle class="n" cx="5" cy="26" r="2.4"/><circle class="n" cx="12" cy="26" r="2.4"/><circle class="n" cx="20" cy="26" r="2.4"/>
+</svg>

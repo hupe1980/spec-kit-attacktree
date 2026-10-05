@@ -1,0 +1,14 @@
+{#- Sidebar: pages of the docs section grouped by extra.group, in the order of config.extra.docs_groups. -#}
+{%- set docs = get_section(path="docs/_index.md") -%}
+{%- set grouped = docs.pages | group_by(attribute="extra.group") -%}
+<nav class="docs-nav" id="docs-nav" aria-label="Documentation">
+  <a class="docs-nav-home{% if current_url == docs.permalink %} active{% endif %}" href="{{ docs.permalink }}">Overview</a>
+  {%- for group in config.extra.docs_groups %}
+  <p class="docs-nav-group">{{ group }}</p>
+  <ul>
+    {%- for p in grouped[group] | default(value=[]) %}
+    <li><a href="{{ p.permalink }}"{% if current_url == p.permalink %} aria-current="page" class="active"{% endif %}>{{ p.extra.nav_title | default(value=p.title) }}</a></li>
+    {%- endfor %}
+  </ul>
+  {%- endfor %}
+</nav>

@@ -4,5 +4,8 @@ __pycache__/
 .pytest_cache/
 .venv/
 
+# Zola build output
+site/public/
+
 # Local spec-kit config overrides
 *-config.local.yml

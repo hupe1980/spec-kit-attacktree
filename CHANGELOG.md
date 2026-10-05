@@ -24,7 +24,10 @@ All notable changes to the AttackTree extension are documented here. The format 
 
 - Attacker profiles: a leaf is feasible for an actor whose skill covers its complexity, whose resources cover its cost tier, and who satisfies its `requires` tags; an AND path needs one actor able to perform every step.
 - Controls scale the likelihood of the subtree they are attached to by `1 − effect`, or by a measured `bypass_rate` once converge records one; scenarios (`current`, `verified`, `planned`, `all`) choose which statuses count.
-- `needs-clarification` nodes are excluded from every path and reported as check A14; `attacktree.exclusions` records deliberate omissions; decisions (`accepted`, `transferred`) require owner, rationale, and expiry and remove their target from blocking checks.
+- `needs-clarification` nodes are left out of the evaluation and listed as assumptions; a goal reachable only through open questions reports risk `unknown` and is never marked mitigated (check A14). `attacktree.exclusions` records deliberate omissions. Decisions (`accepted`, `transferred`) require owner, rationale, and expiry; while unexpired they stop a goal, or every path through a node, from blocking.
+- Actor `occurrence` (1–100) weights every path an actor can run; per-node control `effects` override a control's effect at one node; a goal with likelihood 0 is low risk whatever its impact.
+- Scenarios `none`, `current`, `planned`, `verified`, and `all` choose which control statuses count; the what-if table reports depth reduction and classes controls that only cut alternative paths as defence in depth.
+- Human-owned fields (statuses, evidence levels, bypass rates, occurrence, notes, decisions, verification) survive every regeneration; retiring a goal or inner node retires its subtree.
 - Drift detection hashes `spec.md`, `plan.md`, and the configured OTM file with every extension-managed block removed, so no extension's render is mistaken for a change.
 - Tasks link to requirements through `[CR-###]` bracket tags only, so prose ranges cannot inflate coverage.
 
@@ -42,6 +45,6 @@ All notable changes to the AttackTree extension are documented here. The format 
 
 **Documentation and tests**
 
-- `docs/`: methodology, tree format reference, workflow integration, configuration, design and roadmap, publishing checklist, and AttackTree's own threat model.
+- Documentation site in `site/`, built with Zola and deployed to GitHub Pages: landing page, quickstart, concepts, guides, full reference, design, security, and releasing, with search, light and dark themes, structured data, and a sitemap. CI builds it and checks every link.
 - `examples/agent-assistant`: a complete first pass for an internal RAG assistant built from its spec alone, with rendered view, check report, and simulation, kept valid by tests.
 - Test suite covering the manifest, schema, profiles, checks, simulation (propagation rules, feasibility, scenarios, what-if, single points of failure, Monte Carlo reproducibility, truncation), merge, render, seed, convergence, and the shipped example; CI on Linux and Windows across Python 3.11 and 3.13.

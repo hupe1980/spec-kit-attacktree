@@ -1186,7 +1186,7 @@
         },
         "goal.read-restricted-documents": {
           "likelihood": 0.0,
-          "risk": "high"
+          "risk": "low"
         }
       }
     },
@@ -1218,7 +1218,7 @@
         },
         "goal.read-restricted-documents": {
           "likelihood": 0.0,
-          "risk": "high"
+          "risk": "low"
         }
       }
     },
@@ -1250,7 +1250,7 @@
         },
         "goal.read-restricted-documents": {
           "likelihood": 0.0,
-          "risk": "high"
+          "risk": "low"
         }
       }
     },
@@ -1282,7 +1282,7 @@
         },
         "goal.read-restricted-documents": {
           "likelihood": 0.0,
-          "risk": "high"
+          "risk": "low"
         }
       }
     },
@@ -1314,7 +1314,7 @@
         },
         "goal.read-restricted-documents": {
           "likelihood": 0.0,
-          "risk": "high"
+          "risk": "low"
         }
       }
     },
@@ -1346,7 +1346,7 @@
         },
         "goal.read-restricted-documents": {
           "likelihood": 0.0,
-          "risk": "high"
+          "risk": "low"
         }
       }
     },
@@ -1378,7 +1378,7 @@
         },
         "goal.read-restricted-documents": {
           "likelihood": 0.0,
-          "risk": "high"
+          "risk": "low"
         }
       }
     }

@@ -1,0 +1,49 @@
+<svg class="hero-tree" viewBox="0 0 560 392" role="img" aria-labelledby="ht-title ht-desc">
+  <title id="ht-title">An attack tree from the shipped example</title>
+  <desc id="ht-desc">The goal "read restricted documents" needs two steps (AND): get restricted content into the model context, and get it out. Each step has alternatives (OR). The most likely path, asking directly and having the answer quote the document, reaches 59.5 percent. One control on the choke point cuts every path.</desc>
+  <defs>
+    <marker id="ht-arrow" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 8 4 0 8z" class="t-arrowhead"/></marker>
+  </defs>
+  <!-- edges -->
+  <path class="t-edge t-hot" d="M280 70 C280 100 150 100 150 132"/>
+  <path class="t-edge t-hot" d="M280 70 C280 100 410 100 410 132"/>
+  <path class="t-edge t-hot" d="M150 178 C150 210 76 210 76 244"/>
+  <path class="t-edge" d="M150 178 C150 210 212 210 212 244"/>
+  <path class="t-edge t-hot" d="M410 178 C410 210 348 210 348 244"/>
+  <path class="t-edge" d="M410 178 C410 210 484 210 484 244"/>
+  <!-- goal -->
+  <g class="t-node t-goal">
+    <rect x="130" y="18" width="300" height="52" rx="10"/>
+    <text x="280" y="40" class="t-title">Read restricted documents</text>
+    <text x="280" y="58" class="t-meta">goal · critical impact · AND</text>
+  </g>
+  <!-- subgoals -->
+  <g class="t-node">
+    <rect x="50" y="132" width="200" height="46" rx="9"/>
+    <text x="150" y="152" class="t-title">Get it into the context</text>
+    <text x="150" y="168" class="t-meta">OR · choke point</text>
+  </g>
+  <g class="t-node">
+    <rect x="320" y="132" width="180" height="46" rx="9"/>
+    <text x="410" y="152" class="t-title">Get it out</text>
+    <text x="410" y="168" class="t-meta">OR</text>
+  </g>
+  <!-- leaves -->
+  <g class="t-node t-leaf t-leaf-hot"><rect x="14" y="244" width="124" height="46" rx="8"/><text x="76" y="263" class="t-title">Ask directly</text><text x="76" y="279" class="t-meta">employee · 70 %</text></g>
+  <g class="t-node t-leaf"><rect x="150" y="244" width="124" height="46" rx="8"/><text x="212" y="263" class="t-title">Poison content</text><text x="212" y="279" class="t-meta">author · 65 %</text></g>
+  <g class="t-node t-leaf t-leaf-hot"><rect x="286" y="244" width="124" height="46" rx="8"/><text x="348" y="263" class="t-title">Quote in answer</text><text x="348" y="279" class="t-meta">employee · 85 %</text></g>
+  <g class="t-node t-leaf"><rect x="422" y="244" width="124" height="46" rx="8"/><text x="484" y="263" class="t-title">Paste in a ticket</text><text x="484" y="279" class="t-meta">outsider · 45 %</text></g>
+  <!-- control on the choke point -->
+  <path class="t-ctrl-link" d="M250 162 L262 162 L262 194" marker-end="url(#ht-arrow)"/>
+  <g class="t-ctrl">
+    <rect x="196" y="197" width="136" height="28" rx="14"/>
+    <path d="M208 203 l7 -3 7 3 v5 c0 4 -3 7 -7 8 c-4 -1 -7 -4 -7 -8z" class="t-shield"/>
+    <text x="272" y="215" class="t-ctrl-text">visibility filter</text>
+  </g>
+  <!-- verdict -->
+  <g class="t-verdict">
+    <rect x="14" y="318" width="532" height="56" rx="10"/>
+    <text x="32" y="341" class="t-verdict-title">Most likely path 70 % × 85 % = 59.5 % → critical risk</text>
+    <text x="32" y="361" class="t-meta t-left">One control on the choke point cuts every path · simulate --apply proves it</text>
+  </g>
+</svg>

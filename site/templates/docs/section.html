@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block head %}
+  {%- set page_title = section.title ~ " · " ~ config.title -%}
+  {%- set page_desc = section.description -%}
+  {%- set page_url = section.permalink -%}
+  {% include "partials/head.html" %}
+{% endblock head %}
+{% block jsonld %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+ {"@type":"ListItem","position":1,"name":"Home","item":"{{ config.base_url }}/"},
+ {"@type":"ListItem","position":2,"name":"Documentation","item":"{{ section.permalink }}"}]}
+</script>
+{% endblock jsonld %}
+{% block body_class %}docs{% endblock %}
+{% block content %}
+<div class="container docs-layout docs-layout-wide">
+  <aside class="docs-sidebar">{% include "partials/docs-nav.html" %}</aside>
+  <article class="docs-content">
+    <h1>{{ section.title }}</h1>
+    <div class="prose">{{ section.content | safe }}</div>
+    {%- set grouped = section.pages | group_by(attribute="extra.group") %}
+    {%- for group in config.extra.docs_groups %}
+    <h2 class="docs-group-title" id="{{ group | slugify }}">{{ group }}</h2>
+    <div class="grid-2 doc-cards">
+      {%- for p in grouped[group] | default(value=[]) %}
+      <a class="doc-card" href="{{ p.permalink }}">
+        <h3>{{ p.title }}</h3>
+        <p>{{ p.description }}</p>
+      </a>
+      {%- endfor %}
+    </div>
+    {%- endfor %}
+  </article>
+</div>
+{% endblock content %}

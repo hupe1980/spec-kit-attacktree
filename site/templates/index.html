@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block head %}
+  {%- set page_title = section.title -%}
+  {%- set page_desc = section.description -%}
+  {%- set page_url = section.permalink -%}
+  {% include "partials/head.html" %}
+{% endblock head %}
+{% block jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "{{ config.base_url }}/#website",
+      "url": "{{ config.base_url }}/",
+      "name": {{ config.title | json_encode | safe }},
+      "description": {{ config.description | json_encode | safe }},
+      "inLanguage": "en"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "{{ config.base_url }}/#software",
+      "name": "AttackTree for Spec Kit",
+      "alternateName": "spec-kit-attacktree",
+      "description": {{ section.description | json_encode | safe }},
+      "applicationCategory": "DeveloperApplication",
+      "applicationSubCategory": "Threat modeling",
+      "operatingSystem": "Linux, macOS, Windows",
+      "softwareVersion": "{{ config.extra.version }}",
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "url": "{{ config.base_url }}/",
+      "downloadUrl": "{{ config.extra.repo }}/releases",
+      "codeRepository": "{{ config.extra.repo }}",
+      "programmingLanguage": "Python",
+      "keywords": "attack trees, threat modeling, Spec Kit, spec-driven development, security controls, Monte Carlo, SARIF, OWASP, MITRE ATLAS"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- for item in section.extra.faq %}
+        { "@type": "Question", "name": {{ item.q | json_encode | safe }},
+          "acceptedAnswer": { "@type": "Answer", "text": {{ item.a | json_encode | safe }} } }{% if not loop.last %},{% endif %}
+        {%- endfor %}
+      ]
+    }
+  ]
+}
+</script>
+{% endblock jsonld %}
+{% block body_class %}home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">{{ section.extra.eyebrow }}</p>
+      <h1>{{ section.extra.headline }}</h1>
+      <p class="lead">{{ section.extra.lead }}</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="{{ get_url(path='@/docs/quickstart.md') }}">Get started</a>
+        <a class="btn" href="{{ get_url(path='@/docs/attack-trees.md') }}">How attack trees work</a>
+      </div>
+      <div class="install" data-copy-root>
+        <code>{{ config.extra.install }}</code>
+        <button class="copy-btn" type="button" data-copy aria-label="Copy install command">Copy</button>
+      </div>
+      <p class="hero-note">Requires <a href="https://github.com/github/spec-kit" rel="noopener">Spec Kit</a> ≥ 1.0 and Python 3.11+ with PyYAML or <a href="https://docs.astral.sh/uv/" rel="noopener">uv</a>. Works with Claude Code, Copilot, Cursor, Gemini, and every other Spec Kit agent.</p>
+    </div>
+    <div class="hero-art">{% include "partials/hero-tree.html" %}</div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="why">
+  <div class="container">
+    <h2 id="why" class="section-title">Threat lists tell you what can go wrong. Attack trees tell you how.</h2>
+    <div class="grid-3">
+      <article class="card">
+        <h3>Rank by the path, not the finding</h3>
+        <p>An attacker takes the easiest route to what they want. The tree finds that route per attacker profile, so a trivial insider step outranks an elaborate exploit nobody would try.</p>
+      </article>
+      <article class="card">
+        <h3>Spend on the choke point</h3>
+        <p>Some nodes sit on every path to a goal. One control there does more than five controls on the leaves. The simulation names those nodes and the controls your defence depends on alone.</p>
+      </article>
+      <article class="card">
+        <h3>Verify, don't assume</h3>
+        <p>Controls become <code>CR-###</code> requirements with Given/When/Then acceptance. After implementation, residual risk is recomputed from verified controls only, including measured bypass rates for guardrails.</p>
+      </article>
+    </div>
+    <blockquote class="quote">
+      <p>“One of the surprising things that comes out of this kind of analysis is that the areas people think of as vulnerable usually aren't.”</p>
+      <footer>Bruce Schneier, <cite><a href="https://www.schneier.com/academic/archives/1999/12/attack_trees.html" rel="noopener">Attack Trees</a></cite>, 1999</footer>
+    </blockquote>
+  </div>
+</section>
+
+<section class="band band-soft" aria-labelledby="features">
+  <div class="container">
+    <h2 id="features" class="section-title">Everything an attack tree workshop produces, inside your repository</h2>
+    <div class="grid-3 features">
+      <article class="feature">
+        <h3>Actors, goals, AND/OR paths</h3>
+        <p>Threat actors with skill, resources, access, and risk appetite. Goals with business impact. Leaves rated by complexity, cost, and likelihood, filtered by who can actually run them.</p>
+      </article>
+      <article class="feature">
+        <h3>Simulation you can act on</h3>
+        <p>Most likely and cheapest path per actor, choke points, single points of failure, what-if for every inactive control, a cost-ranked roadmap, and a seeded Monte Carlo.</p>
+      </article>
+      <article class="feature">
+        <h3>Requirements in the spec</h3>
+        <p>Controls become <code>CR-###</code> control requirements in <code>spec.md</code>, so planning and task generation treat them like any functional requirement.</p>
+      </article>
+      <article class="feature">
+        <h3>16 deterministic checks</h3>
+        <p>Dangling references, uncontrolled paths, controls without requirements, requirements without tasks or evidence, expired risk decisions, drift. Markdown, JSON, or SARIF.</p>
+      </article>
+      <article class="feature">
+        <h3>Evidence-based convergence</h3>
+        <p>Every requirement is judged from tests, reviews, or micro attack simulations. Verified status, bypass rates, and gaps flow back into the tree and into <code>tasks.md</code>.</p>
+      </article>
+      <article class="feature">
+        <h3>Built for agentic systems</h3>
+        <p>An agentic profile with five attack-surface zones, vectors mapped to OWASP Top 10 for LLM and Agentic Applications 2026 and MITRE ATLAS, and probabilistic controls.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="how">
+  <div class="container">
+    <h2 id="how" class="section-title">Four commands along the Spec Kit lifecycle</h2>
+    <ol class="steps">
+      <li>
+        <span class="step-num">1</span>
+        <div><h3><code>/speckit-attacktree-model</code></h3>
+        <p>After <code>/speckit-specify</code>: the agent builds <code>attack-tree.yaml</code> and publishes control requirements into the spec. After <code>/speckit-plan</code>: a second pass pins attacks and controls to real files.</p></div>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <div><h3><code>/speckit-attacktree-simulate</code></h3>
+        <p>Residual risk per goal, choke points, single points of failure, and a roadmap of controls ranked by risk reduction per cost. The team picks what to build.</p></div>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <div><h3><code>/speckit-attacktree-check</code></h3>
+        <p>After <code>/speckit-tasks</code>: every path has a control, every control a requirement, every requirement a task. Findings as Markdown or SARIF.</p></div>
+      </li>
+      <li>
+        <span class="step-num">4</span>
+        <div><h3><code>/speckit-attacktree-converge</code></h3>
+        <p>After <code>/speckit-implement</code>: evidence per requirement, verified controls, residual risk from what was proven, and remediation tasks for the gaps.</p></div>
+      </li>
+    </ol>
+    <p class="center"><a class="text-link" href="{{ get_url(path='@/docs/workflow.md') }}">See the full workflow →</a></p>
+  </div>
+</section>
+
+<section class="band band-soft" aria-labelledby="output">
+  <div class="container split">
+    <div>
+      <h2 id="output" class="section-title left">Real output, not a dashboard mock-up</h2>
+      <p>This is the simulation of the shipped example, an internal assistant that answers questions from a knowledge base and opens support tickets, with every control still only proposed. Four goals block; one node is the choke point for the critical one; one control is the quick win.</p>
+      <p>Everything here comes from a single command that also runs in CI:</p>
+      <pre class="term"><code>attacktree.sh simulate --scenario current</code></pre>
+      <p><a class="text-link" href="{{ get_url(path='@/docs/quickstart.md') }}">Reproduce it in five minutes →</a></p>
+    </div>
+    <figure class="output">
+<pre><code>Goal                            Impact    Likelihood  Risk
+goal.read-restricted-documents  critical  59.5 high   critical
+goal.abuse-ticket-credential    high      80.0 v-high critical
+goal.poison-answers             high      80.0 v-high critical
+goal.impersonate-employee       high      75.0 v-high critical
+goal.forge-ticket               high      55.0 high   high
+goal.deny-service               medium    85.0 v-high high
+
+Uncovered choke point
+  goal.read-restricted-documents → node.rrd-reach
+
+What-if, best first
+  1 control.visibility-filtered-retrieval  quick win
+  2 control.reporter-from-session          quick win
+  3 control.rate-and-size-limits           quick win
+  8 control.ticket-confirmation            defence in depth</code></pre>
+      <figcaption>Condensed from <code>security/attacktree-simulation.md</code> of the example.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="ci">
+  <div class="container split">
+    <div>
+      <h2 id="ci" class="section-title left">Gate pull requests on residual risk</h2>
+      <p>The bundled GitHub Action runs the checks and the simulation, uploads findings to code scanning as SARIF, and can fail the build while a goal stays at blocking risk.</p>
+      <p><a class="text-link" href="{{ get_url(path='@/docs/ci.md') }}">CI guide →</a></p>
+    </div>
+<pre class="term"><code>- uses: hupe1980/spec-kit-attacktree@v{{ config.extra.version }}
+  with:
+    feature-dir: specs/007-agent-assistant
+    scenario: current
+    fail-on-blocking-goals: "true"</code></pre>
+  </div>
+</section>
+
+<section class="band band-soft" aria-labelledby="standards">
+  <div class="container">
+    <h2 id="standards" class="section-title">Built on published methods and open standards</h2>
+    <ul class="standards">
+      <li><strong>Schneier</strong><span>Attack trees, 1999</span></li>
+      <li><strong>Schneider</strong><span>Scenario-driven attack trees</span></li>
+      <li><strong>MITRE CAPEC</strong><span>Attack patterns</span></li>
+      <li><strong>MITRE ATLAS</strong><span>AI attack techniques</span></li>
+      <li><strong>OWASP ASVS</strong><span>Control references</span></li>
+      <li><strong>OWASP Top 10 2026</strong><span>LLM and Agentic Applications</span></li>
+      <li><strong>Open Threat Model</strong><span>Import</span></li>
+      <li><strong>SARIF 2.1.0</strong><span>Code scanning</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="faq">
+  <div class="container narrow">
+    <h2 id="faq" class="section-title">Questions</h2>
+    <div class="faq">
+      {%- for item in section.extra.faq %}
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="band cta-band">
+  <div class="container narrow center">
+    <h2 class="section-title">Model your first attack tree today</h2>
+    <p class="lead">Install the extension, run one command after <code>/speckit-specify</code>, and read the simulation.</p>
+    <div class="cta-row center">
+      <a class="btn btn-primary" href="{{ get_url(path='@/docs/quickstart.md') }}">Read the quickstart</a>
+      <a class="btn" href="{{ config.extra.repo }}" rel="noopener">Star on GitHub</a>
+    </div>
+  </div>
+</section>
+{% endblock content %}

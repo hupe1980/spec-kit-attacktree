@@ -1,6 +1,13 @@
-# `attack-tree.yaml` reference
++++
+title = "attack-tree.yaml format"
+description = "Complete reference for attack-tree.yaml: actors, assets, goals, AND/OR nodes, attack vectors, controls, CR requirements, verification, decisions, reference rules, baselines, and drift hashes."
+weight = 32
+[extra]
+group = "Reference"
+nav_title = "File format"
++++
 
-`attack-tree.yaml` is the canonical, machine-readable attack tree of one feature. The JSON Schema is `schemas/attack-tree.schema.json`; the engine validates against it, against the reference rules below, and against the tree structure on every write.
+`attack-tree.yaml` lives next to `spec.md` in each feature directory and is the single source of truth: `attack-tree.md` and the `CR-###` block in `spec.md` are rendered from it. The [JSON Schema](https://github.com/hupe1980/spec-kit-attacktree/blob/main/schemas/attack-tree.schema.json) describes its shape; the engine validates against the schema, the reference rules below, and the tree structure on every write. An annotated [skeleton](https://github.com/hupe1980/spec-kit-attacktree/blob/main/templates/attack-tree.yaml) and a [complete example](https://github.com/hupe1980/spec-kit-attacktree/blob/main/examples/agent-assistant/specs/001-agent-assistant/attack-tree.yaml) are in the repository.
 
 ## Top level
 
@@ -32,7 +39,7 @@
 
 Ids are immutable. A goal or node the model command no longer produces keeps its entry with `status: retired` and a `retired_reason`; retiring a goal or an interior node by hand retires its whole subtree. Asset ids follow the OTM convention (`asset.<slug>`) so `seed` and `links` line up with an OTM file.
 
-## `actors[]`
+## Actors
 
 ```yaml
 - id: actor.outsider
@@ -48,9 +55,9 @@ Ids are immutable. A goal or node the model command no longer produces keeps its
   source: "spec.md#Assumptions"
 ```
 
-A capability an actor does not state never limits it, so an unrated or partially rated actor can run more than it should (check A15 names the missing keys). `occurrence` scales every path that actor can run: a path's reported likelihood is its raw likelihood times the occurrence of the most active actor able to run it, so a trivial attack that only a rare actor attempts ranks below a harder one that a common actor attempts. Schneier lists "likelihood that an attacker will try a given attack" as its own node value; attacktree.online calls it the actor's occurrence.
+Leave out `occurrence` unless you have a reason; it defaults to 100. A capability an actor does not state never limits it, so an unrated or partially rated actor can run more than it should (check A15 names the missing keys). `occurrence` scales every path that actor can run: a path's reported likelihood is its raw likelihood times the occurrence of the most active actor able to run it, so a trivial attack that only a rare actor attempts ranks below a harder one that a common actor attempts. Schneier lists "likelihood that an attacker will try a given attack" as its own node value; attacktree.online calls it the actor's occurrence.
 
-## `goals[]`
+## Goals
 
 ```yaml
 - id: goal.read-restricted-documents
@@ -65,7 +72,7 @@ A capability an actor does not state never limits it, so an unrated or partially
 
 `impact` may also be a single level (`impact: high`). `status` is human- and engine-owned: the model command never changes it on an existing goal; converge sets `mitigated` when the goal has feasible paths, every one carries a verified control, the residual risk is below `risk.block_on`, and the goal is not `unknown`; `accepted` and `transferred` follow an unexpired decision and fall back to `open` when it expires.
 
-## `nodes[]`
+## Nodes
 
 ```yaml
 - id: node.rrd-reach                         # intermediate node
@@ -91,7 +98,7 @@ A capability an actor does not state never limits it, so an unrated or partially
 
 A node with children is a subgoal and must not carry `attack`; a node without children is a leaf and should (check A4). A node with `status: needs-clarification` is a question: give it a name starting with `[NEEDS CLARIFICATION: …]`, place it under an OR node next to a rated sibling, and the engine evaluates the tree without it (an interior node in that state hides its whole subtree), lists it as an assumption in the simulation, and reports it as check A14. A goal whose every path runs through open questions is reported as `unknown`, not as low risk, and converge never marks it mitigated.
 
-## `controls[]`
+## Controls
 
 ```yaml
 - id: control.untrusted-context-delimiting
@@ -114,7 +121,7 @@ A node with children is a subgoal and must not carry `attack`; a node without ch
 
 `status` is human-owned for `proposed`, `planned`, and `rejected`; converge sets `implemented` (from evidence of code at the touchpoint) and `verified`, and demotes a `verified` claim without evidence to `implemented`. The model command never changes the status of an existing control, whatever its incoming file says. `evidence` follows the verification method: tests, scans, and simulations give `lab-validated`, reviews `design-reviewed`, manual drills `end-to-end-validated`; `regression-tested` is set by hand once the check runs in CI.
 
-## `requirements[]`
+## Requirements
 
 ```yaml
 - id: CR-002
@@ -128,7 +135,9 @@ A node with children is a subgoal and must not carry `attack`; a node without ch
   tasks: [T011, T012]                        # optional, for tasks that cannot carry a tag; tasks tagged [CR-002] in tasks.md are matched at run time
 ```
 
-## `verification[]` (append-only)
+## Verification
+
+Appended by converge and never rewritten.
 
 ```yaml
 - id: verification.cr-002.2026-09-25
@@ -143,7 +152,7 @@ A node with children is a subgoal and must not carry `attack`; a node without ch
   commit: a1b2c3d
 ```
 
-## `decisions[]`
+## Decisions
 
 ```yaml
 - id: decision.deny-service

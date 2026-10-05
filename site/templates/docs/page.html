@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block head %}
+  {%- set page_title = page.extra.seo_title | default(value=page.title ~ " · " ~ config.title) -%}
+  {%- set page_desc = page.description -%}
+  {%- set page_url = page.permalink -%}
+  {%- set og_type = "article" -%}
+  {% include "partials/head.html" %}
+{% endblock head %}
+{% block jsonld %}
+{%- set docs = get_section(path="docs/_index.md") -%}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"TechArticle","headline":{{ page.title | json_encode | safe }},"description":{{ page.description | json_encode | safe }},
+  "url":"{{ page.permalink }}","inLanguage":"en","articleSection":{{ page.extra.group | json_encode | safe }},
+  "isPartOf":{"@id":"{{ config.base_url }}/#website"},"about":{"@id":"{{ config.base_url }}/#software"},
+  "author":{"@type":"Person","name":"{{ config.extra.author }}","url":"https://github.com/{{ config.extra.author }}"},
+  "image":"{{ get_url(path=config.extra.og_image) }}"},
+ {"@type":"BreadcrumbList","itemListElement":[
+  {"@type":"ListItem","position":1,"name":"Home","item":"{{ config.base_url }}/"},
+  {"@type":"ListItem","position":2,"name":"Documentation","item":"{{ docs.permalink }}"},
+  {"@type":"ListItem","position":3,"name":{{ page.title | json_encode | safe }},"item":"{{ page.permalink }}"}]}]}
+</script>
+{% endblock jsonld %}
+{% block body_class %}docs{% endblock %}
+{% block content %}
+{%- set docs = get_section(path="docs/_index.md") -%}
+{#- previous and next page in sidebar order -#}
+{%- set grouped = docs.pages | group_by(attribute="extra.group") -%}
+{%- set_global prev = "" -%}{%- set_global next = "" -%}{%- set_global last = "" -%}{%- set_global found = false -%}
+{%- for group in config.extra.docs_groups -%}
+  {%- for p in grouped[group] | default(value=[]) -%}
+    {%- if found and not next -%}{%- set_global next = p -%}{%- endif -%}
+    {%- if p.permalink == page.permalink -%}{%- set_global prev = last -%}{%- set_global found = true -%}{%- endif -%}
+    {%- set_global last = p -%}
+  {%- endfor -%}
+{%- endfor -%}
+<div class="container docs-layout">
+  <aside class="docs-sidebar">
+    <button class="docs-nav-toggle" type="button" data-docs-nav-toggle aria-controls="docs-nav" aria-expanded="false">Documentation menu</button>
+    {% include "partials/docs-nav.html" %}
+  </aside>
+  <article class="docs-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ docs.permalink }}">Docs</a><span aria-hidden="true">/</span><span>{{ page.extra.group }}</span>
+    </nav>
+    <h1>{{ page.title }}</h1>
+    <p class="lead">{{ page.description }}</p>
+    <div class="prose">{{ page.content | safe }}</div>
+    <footer class="docs-footer">
+      <a class="edit-link" href="{{ config.extra.repo }}/edit/{{ config.extra.repo_branch }}/site/content/{{ page.relative_path }}" rel="noopener">Edit this page on GitHub</a>
+      <nav class="pager" aria-label="Previous and next page">
+        {%- if prev %}<a class="pager-prev" href="{{ prev.permalink }}"><span>Previous</span>{{ prev.extra.nav_title | default(value=prev.title) }}</a>{% else %}<span></span>{% endif %}
+        {%- if next %}<a class="pager-next" href="{{ next.permalink }}"><span>Next</span>{{ next.extra.nav_title | default(value=next.title) }}</a>{% endif %}
+      </nav>
+    </footer>
+  </article>
+  {%- if page.toc | length > 1 %}
+  <aside class="docs-toc" aria-label="On this page">
+    <p class="docs-toc-title">On this page</p>
+    <ul>
+      {%- for h in page.toc %}
+      <li><a href="#{{ h.id }}">{{ h.title }}</a></li>
+      {%- endfor %}
+    </ul>
+  </aside>
+  {%- endif %}
+</div>
+{% endblock content %}

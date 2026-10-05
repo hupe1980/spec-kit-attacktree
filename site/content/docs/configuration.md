@@ -1,15 +1,16 @@
-# Configuration reference
++++
+title = "Configuration"
+description = "Every AttackTree configuration key with its default and effect: profiles, enforcement, risk scenario and blocking levels, simulation, risk acceptance, model rendering and OTM, and verification."
+weight = 34
+[extra]
+group = "Reference"
++++
 
-AttackTree reads one configuration object per repository. Every key is optional; the engine falls back to a documented default for each. `config-template.yml` at the repository root is the annotated copy to start from.
+AttackTree reads one configuration per repository. Every key is optional, and each has a documented default.
 
 ## Where the file lives
 
-```bash
-cp .specify/extensions/attacktree/attacktree-config.template.yml \
-   .specify/extensions/attacktree/attacktree-config.yml
-```
-
-`specify extension add attacktree` installs the template into `.specify/extensions/attacktree/`. Commit `attacktree-config.yml`; keep machine-specific values in `attacktree-config.local.yml`, which Spec Kit gitignores.
+`specify extension add attacktree` writes `.specify/extensions/attacktree/attacktree-config.yml` with every key at its default. Edit and commit it. Put machine-specific values in `attacktree-config.local.yml` next to it, which Spec Kit gitignores. The annotated source of the file is [`config-template.yml`](https://github.com/hupe1980/spec-kit-attacktree/blob/main/config-template.yml).
 
 ## Precedence
 
@@ -44,12 +45,12 @@ Other nested keys cannot be set from the environment; use the local override fil
 profiles: [default, agentic]
 ```
 
-Profiles supply the scales and the proposal libraries. Default `[default]`. Each name resolves to `profiles/<name>.yaml`. The `default` profile's scales are always the base; the first active profile that declares `scales` overlays them, and every profile adds archetypes, vector and control proposals, and zones. A feature's own `attack-tree.yaml` wins over this setting: the engine reads `attacktree.profiles` from the tree first.
+See [Profiles](@/docs/profiles.md). Profiles supply the scales and the proposal libraries. Default `[default]`. Each name resolves to `profiles/<name>.yaml`. The `default` profile's scales are always the base; the first active profile that declares `scales` overlays them, and every profile adds archetypes, vector and control proposals, and zones. A feature's own `attack-tree.yaml` wins over this setting: the engine reads `attacktree.profiles` from the tree first.
 
 | Profile | Supplies |
 |---|---|
-| `default` | scales, Schneider's actor archetypes, 20 CAPEC-mapped vector proposals, 16 ASVS 4.0.3-mapped control proposals |
-| `agentic` | five attack-surface zones, agentic archetypes, 15 vectors mapped to OWASP ASI/LLM 2026, ATLAS, MAESTRO, 16 control proposals split into deterministic and probabilistic |
+| `default` | scales, 8 actor archetypes, 20 attack vector proposals with CAPEC references, 16 control proposals with ASVS 4.0.3 or NIST CSF references |
+| `agentic` | 5 attack-surface zones, 4 agentic archetypes, 15 vectors with OWASP LLM and Agentic 2026, ATLAS, and MAESTRO references, 16 controls of which 5 are probabilistic |
 
 ### `enforcement`
 
@@ -96,9 +97,9 @@ simulation:
 |---|---|---|
 | `iterations` | `2000` | Monte Carlo iterations; `0` disables the section. |
 | `seed` | `42` | Random seed; identical inputs give identical results. |
-| `likelihood_spread` | `15` | Points added and subtracted around each leaf likelihood when no `likelihood_range` is set; probabilistic controls are sampled ±15 % around their effect. |
+| `likelihood_spread` | `15` | Points added and subtracted around each leaf likelihood when no `likelihood_range` is set. Probabilistic controls are always jittered by ± 0.15 of their surviving fraction. |
 
-`simulate --iterations N --seed N` override both for one run.
+`simulate --iterations N --seed N` overrides both for one run.
 
 ### `risk_acceptance`
 

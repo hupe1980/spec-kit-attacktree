@@ -1,0 +1,28 @@
+# AttackTree for Spec Kit
+
+> Open-source GitHub Spec Kit extension that turns a feature spec into an attack tree (threat actors, attacker goals, AND/OR paths, rated attack vectors, security controls), simulates which controls cut the paths, publishes controls as CR-### requirements in spec.md, and verifies each control with evidence. MIT licensed. Source: https://github.com/hupe1980/spec-kit-attacktree
+
+## Get started
+- [Introduction](https://hupe1980.github.io/spec-kit-attacktree/docs/introduction/): what AttackTree is and how it fits Spec Kit
+- [Installation](https://hupe1980.github.io/spec-kit-attacktree/docs/installation/): install sources, preset, workflow, hooks
+- [Quickstart](https://hupe1980.github.io/spec-kit-attacktree/docs/quickstart/): run the shipped example, then model your own feature
+
+## Concepts
+- [Attack trees](https://hupe1980.github.io/spec-kit-attacktree/docs/attack-trees/): Schneier's method, AND/OR nodes, attacker profiles
+- [Risk model](https://hupe1980.github.io/spec-kit-attacktree/docs/risk-model/): likelihood, feasibility, controls, occurrence, residual risk matrix
+- [Simulation](https://hupe1980.github.io/spec-kit-attacktree/docs/simulation/): choke points, single points of failure, what-if, roadmap, Monte Carlo
+- [Verification](https://hupe1980.github.io/spec-kit-attacktree/docs/evidence/): verdicts, bypass rates, definition of converged
+
+## Reference
+- [Commands](https://hupe1980.github.io/spec-kit-attacktree/docs/commands/)
+- [Engine CLI](https://hupe1980.github.io/spec-kit-attacktree/docs/cli/)
+- [attack-tree.yaml format](https://hupe1980.github.io/spec-kit-attacktree/docs/attack-tree-format/)
+- [Checks A1–A16](https://hupe1980.github.io/spec-kit-attacktree/docs/checks/)
+- [Configuration](https://hupe1980.github.io/spec-kit-attacktree/docs/configuration/)
+- [Profiles](https://hupe1980.github.io/spec-kit-attacktree/docs/profiles/)
+- [Glossary](https://hupe1980.github.io/spec-kit-attacktree/docs/glossary/)
+
+## Optional
+- [Agentic and LLM systems](https://hupe1980.github.io/spec-kit-attacktree/docs/agentic-systems/)
+- [CI and code scanning](https://hupe1980.github.io/spec-kit-attacktree/docs/ci/)
+- [Design and roadmap](https://hupe1980.github.io/spec-kit-attacktree/docs/design/)

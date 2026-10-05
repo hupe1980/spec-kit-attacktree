@@ -8,7 +8,7 @@ Subcommands
   validate        Validate a tree against the schema, reference rules and tree structure
   merge           Merge an LLM-produced tree into the existing one (stable ids, human fields kept)
   render          Render attack-tree.md and the CR block inside spec.md
-  check           Run gap checks A1–A15 (md | json | sarif), exit code reflects severity
+  check           Run gap checks A1–A16 (md | json | sarif), exit code reflects severity
   simulate        Attack paths per actor, residual risk, choke points, what-if roadmap, Monte Carlo
   converge-scan   Collect per-requirement evidence facts for the converge command
   converge-apply  Record verdicts, roll up control status, write the convergence report, append tasks
@@ -302,6 +302,8 @@ def impact_level(goal: Dict[str, Any], scales: Dict[str, Any]) -> str:
 
 
 def risk_level(likelihood: float, impact: str, scales: Dict[str, Any]) -> str:
+    if likelihood <= 0:
+        return "low"  # no path gets through: the goal is impossible, whatever it would cost
     return scales["risk_matrix"].get(likelihood_level(likelihood, scales), {}).get(impact, "low")
 
 

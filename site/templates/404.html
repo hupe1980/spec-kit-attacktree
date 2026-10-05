@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block head %}{% set page_title = "Page not found · " ~ config.title %}{% include "partials/head.html" %}<meta name="robots" content="noindex">{% endblock head %}
+{% block content %}
+<section class="container narrow not-found">
+  <p class="eyebrow">404</p>
+  <h1>This path was cut.</h1>
+  <p class="lead">The page you are looking for does not exist or has moved. Try the search, or start from one of these:</p>
+  <p class="cta-row">
+    <a class="btn btn-primary" href="{{ get_url(path='@/docs/_index.md') }}">Documentation</a>
+    <a class="btn" href="{{ get_url(path='/') }}">Home</a>
+  </p>
+</section>
+{% endblock content %}

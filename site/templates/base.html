@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="{{ lang | default(value='en') }}">
+<head>
+  {%- block head %}{% include "partials/head.html" %}{% endblock head %}
+  {%- block jsonld %}{% endblock jsonld %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% include "partials/header.html" %}
+  <main id="main">{% block content %}{% endblock content %}</main>
+  {% include "partials/footer.html" %}
+</body>
+</html>
