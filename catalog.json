@@ -18,7 +18,22 @@
       "category": "process",
       "effect": "read-write",
       "requires": {
-        "speckit_version": ">=1.0.0"
+        "speckit_version": ">=1.0.0",
+        "tools": [
+          {
+            "name": "python + pyyaml (or uv instead)",
+            "version": ">=3.11",
+            "required": true
+          },
+          {
+            "name": "uv (instead of python + pyyaml)",
+            "required": false
+          },
+          {
+            "name": "jsonschema (python package, full schema validation)",
+            "required": false
+          }
+        ]
       },
       "provides": {
         "commands": 4,
